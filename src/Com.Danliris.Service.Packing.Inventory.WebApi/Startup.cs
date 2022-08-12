@@ -512,7 +512,7 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi
             {
                 var context = serviceScope.ServiceProvider.GetService<PackingInventoryDbContext>();
                 context.Database.SetCommandTimeout(1000);
-                //context.Database.Migrate();
+                context.Database.Migrate();
 
                 //var bus = serviceScope.ServiceProvider.GetService<IAzureServiceBusConsumer<ProductSKUInventoryMovementModel>>();
                 //bus.RegisterOnMessageHandlerAndReceiveMessages();

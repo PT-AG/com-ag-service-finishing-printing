@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Com.Danliris.Service.Packing.Inventory.Application\Com.Danliris.Service.Packing.Inventory.Application.csproj" />
+    <ProjectReference Include="..\Com.Danliris.Service.Packing.Inventory.Infrastructure\Com.Danliris.Service.Packing.Inventory.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
