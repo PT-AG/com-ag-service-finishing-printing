@@ -394,7 +394,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
                 var branchOfficeY = height - marginTop + 70;
 
-                byte[] imageByteDL = Convert.FromBase64String(Base64ImageStrings.LOGO_DANLIRIS_58_58);
+                byte[] imageByteDL = Convert.FromBase64String(Base64ImageStrings.LOGO_AG_58_58);
                 Image imageDL = Image.GetInstance(imageByteDL);
                 imageDL.SetAbsolutePosition(marginLeft, branchOfficeY);
                 cb.AddImage(imageDL, inlineImage: true);

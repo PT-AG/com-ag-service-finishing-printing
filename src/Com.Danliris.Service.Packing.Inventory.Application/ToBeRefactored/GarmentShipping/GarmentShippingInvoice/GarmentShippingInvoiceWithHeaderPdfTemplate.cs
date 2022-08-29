@@ -637,7 +637,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
             #region LOGODL
 
-            byte[] imageByteDL = Convert.FromBase64String(Base64ImageStrings.LOGO_DANLIRIS_58_58);
+            byte[] imageByteDL = Convert.FromBase64String(Base64ImageStrings.LOGO_AG_58_58);
             Image imageDL = Image.GetInstance(imageByteDL);
             if (imageDL.Width > 60)
             {
