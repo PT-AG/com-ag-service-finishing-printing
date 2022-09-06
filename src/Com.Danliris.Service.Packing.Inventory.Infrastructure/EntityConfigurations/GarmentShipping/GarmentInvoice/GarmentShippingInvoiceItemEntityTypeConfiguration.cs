@@ -52,7 +52,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.EntityConfigurat
 
 			configuration
 				.Property(inventoryDocument => inventoryDocument.ComodityCode)
-				.HasMaxLength(5);
+				.HasMaxLength(50);
 
 			configuration
 				.Property(inventoryDocument => inventoryDocument.ComodityName)
