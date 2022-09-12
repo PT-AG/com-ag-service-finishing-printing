@@ -47,6 +47,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 		public ICollection<GarmentPackingListItemViewModel> Items { get; set; }
 
         public string Description { get; set; }
+        public string UserAuthorizedName { get; set; }
 
         #endregion
 
