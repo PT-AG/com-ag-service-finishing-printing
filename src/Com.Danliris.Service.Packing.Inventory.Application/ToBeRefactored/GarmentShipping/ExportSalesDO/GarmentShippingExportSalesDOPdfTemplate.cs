@@ -60,14 +60,14 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             
 
             //cellHeaderContent1.AddElement(new Phrase("\n", normal_font));
-            cellHeaderContent1.AddElement(new Phrase("PT. DAN LIRIS", header_font_bold_big));
-            cellHeaderContent1.AddElement(new Phrase("Head Office : Jl. Merapi No 23", small_font));
-            cellHeaderContent1.AddElement(new Phrase("Banaran, Grogol, Sukoharjo, 57193", small_font));
+            cellHeaderContent1.AddElement(new Phrase("PT. AMBASSADOR GARMINDO", header_font_bold_big));
+            cellHeaderContent1.AddElement(new Phrase("Head Office : Banaran, Grogol, Sukoharjo, 57552", small_font));
+            //cellHeaderContent1.AddElement(new Phrase("", small_font));
             cellHeaderContent1.AddElement(new Phrase("Central Java, Indonesia", small_font));
-            cellHeaderContent1.AddElement(new Phrase("Phone : (+62 271) 740888, 714400", small_font));
-            cellHeaderContent1.AddElement(new Phrase("Fax : (+62 271) 740777, 735222", small_font));
-            cellHeaderContent1.AddElement(new Phrase("PO BOX 166 Solo, 57100", small_font));
-            cellHeaderContent1.AddElement(new Phrase("www.danliris.com", small_font));
+            cellHeaderContent1.AddElement(new Phrase("Phone : (0271) 732888, 7652913", small_font));
+            //cellHeaderContent1.AddElement(new Phrase("Fax : (+62 271) 740777, 735222", small_font));
+            //cellHeaderContent1.AddElement(new Phrase("PO BOX 166 Solo, 57100", small_font));
+            //cellHeaderContent1.AddElement(new Phrase("", small_font));
             cellHeaderContent1.AddElement(new Phrase("\n", normal_font));
             cellHeaderContent1.AddElement(new Phrase(viewModel.exportSalesDONo, bold_font));
             cellHeaderContent1.AddElement(new Phrase(viewModel.buyerAgent.Name, normal_font));

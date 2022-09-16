@@ -22,6 +22,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.Shi
         public string BankCurrencyCode { get; private set; }
 
         public double TotalAmount { get; private set; }
+        public string UserAuthorizedName { get; private set; }
 
         public ICollection<GarmentShippingNoteItemModel> Items { get; private set; }
 
@@ -29,7 +30,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.Shi
         {
         }
 
-        public GarmentShippingNoteModel(GarmentShippingNoteTypeEnum noteType, string noteNo, DateTimeOffset date, int buyerId, string buyerCode, string buyerName, string description, string receiptNo, DateTimeOffset receiptDate, int bankId, string bankName, string bankCurrencyCode, double totalAmount, ICollection<GarmentShippingNoteItemModel> items)
+        public GarmentShippingNoteModel(GarmentShippingNoteTypeEnum noteType, string noteNo, DateTimeOffset date, int buyerId, string buyerCode, string buyerName, string description, string receiptNo, DateTimeOffset receiptDate, int bankId, string bankName, string bankCurrencyCode, double totalAmount, string userAuthorizedName, ICollection<GarmentShippingNoteItemModel> items)
         {
             NoteType = noteType;
             NoteNo = noteNo;
@@ -44,6 +45,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.Shi
             BankName = bankName;
             BankCurrencyCode = bankCurrencyCode;
             TotalAmount = totalAmount;
+            UserAuthorizedName = userAuthorizedName;
             Items = items;
         }
 
@@ -115,6 +117,15 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.Shi
             if (TotalAmount != totalAmount)
             {
                 TotalAmount = totalAmount;
+                this.FlagForUpdate(userName, userAgent);
+            }
+        }
+
+        public void SetUserAuthorizedName(string userAuthorizedName, string userName, string userAgent)
+        {
+            if (UserAuthorizedName != userAuthorizedName)
+            {
+                UserAuthorizedName = userAuthorizedName;
                 this.FlagForUpdate(userName, userAgent);
             }
         }

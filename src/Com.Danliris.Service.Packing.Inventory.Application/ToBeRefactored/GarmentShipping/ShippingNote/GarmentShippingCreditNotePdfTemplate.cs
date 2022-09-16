@@ -24,7 +24,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
             document.Open();
 
-            var chunkHeader = new Chunk("PT. DAN LIRIS", big_font);
+            var chunkHeader = new Chunk("PT. AMBASSADOR GARMINDO", big_font);
             chunkHeader.SetHorizontalScaling(1.5f);
             document.Add(new Paragraph(chunkHeader));
 
@@ -34,8 +34,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             PdfPCell cellHeadOffice = new PdfPCell { Border = Rectangle.NO_BORDER };
             cellHeadOffice.Phrase = new Phrase("Head Office : ", normal_font);
             tableHeadOffice.AddCell(cellHeadOffice);
-            cellHeadOffice.Phrase = new Phrase("Jl. Merapi No. 23, Kel. Banaran Kec. Grogol Kab. Sukoharjo\nTelp.(0271)714400, Fax.(0271)735222\ne-Mail:", normal_font);
-            cellHeadOffice.Phrase.Add(new Chunk("nara.exportgmt@danliris.com", underlined_font));
+            cellHeadOffice.Phrase = new Phrase("Banaran, Grogol, Sukoharjo, Jawa Tengah\n57552\nTelp (0271) 732888, 7652913", normal_font);
+            //cellHeadOffice.Phrase.Add(new Chunk("nara.exportgmt@danliris.com", underlined_font));
             tableHeadOffice.AddCell(cellHeadOffice);
             Chunk chunkAddress = new Chunk("MESSRS :\n" + viewModel.buyer.Name + "\n" + viewModel.buyer.Address, normal_font);
             chunkAddress.SetHorizontalScaling(0.8f);
@@ -186,7 +186,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             });
             Phrase phraseSign = new Phrase();
             phraseSign.Add(new Chunk("S.E. & O\n" + viewModel.date.GetValueOrDefault().ToOffset(new TimeSpan(timeoffset, 0, 0)).ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("en-EN")) + "\n\n\n\n", normal_font));
-            Chunk chunkSignName = new Chunk("WAHYU PAMUNGKAS", normal_font);
+            Chunk chunkSignName = new Chunk(viewModel.userAuthorizedName, normal_font);
             chunkSignName.SetUnderline(1, -1);
             phraseSign.Add(chunkSignName);
             phraseSign.Add(new Chunk("\nAUTHORIZED SIGNATURE", normal_font));

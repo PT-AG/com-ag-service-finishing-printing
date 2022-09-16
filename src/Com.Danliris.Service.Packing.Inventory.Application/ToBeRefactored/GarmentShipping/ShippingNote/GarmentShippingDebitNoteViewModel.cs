@@ -27,6 +27,11 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 yield return new ValidationResult("Bank tidak boleh kosong", new List<string> { "bank" });
             }
 
+            if (string.IsNullOrWhiteSpace(userAuthorizedName))
+            {
+                yield return new ValidationResult("Authorized tidak boleh kosong", new List<string> { "userAuthorizedName" });
+            }
+
             if (items == null || items.Count == 0)
             {
                 yield return new ValidationResult("Items tidak boleh kosong", new List<string> { "itemsCount" });
