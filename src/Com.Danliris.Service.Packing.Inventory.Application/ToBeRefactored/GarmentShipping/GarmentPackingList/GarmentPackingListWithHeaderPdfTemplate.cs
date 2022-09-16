@@ -719,7 +719,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             tableSign.AddCell(cellBodySignNoBorder);
             cellBodySignNoBorder.Phrase = new Phrase("", normal_font);
             tableSign.AddCell(cellBodySignNoBorder);
-            cellBodySignNoBorder.Phrase = new Phrase("( MRS. ADRIYANA DAMAYANTI )", normal_font_underlined);
+            cellBodySignNoBorder.Phrase = new Phrase("( " + viewModel.UserAuthorizedName + " )", normal_font_underlined);
             tableSign.AddCell(cellBodySignNoBorder);
 
             cellBodySignNoBorder.Phrase = new Phrase("", normal_font);
@@ -812,8 +812,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                     "Head Office : Kelurahan Banaran, Kecamatan Grogol,",
                     "Sukoharjo - Indonesia",
                     "PO BOX 166 Solo 57100",
-                    "Telp. 0271-732888",
-                    "Fax. (62 271) 735222, 740777",
+                    "Telp. 0271-732888, 7652913",
                     "Website : www.ambassadorgarmindo.com",
                 };
                 for (int i = 0; i < headOffices.Length; i++)

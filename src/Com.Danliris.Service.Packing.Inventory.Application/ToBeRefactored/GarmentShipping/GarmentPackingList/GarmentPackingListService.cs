@@ -428,6 +428,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
             var viewModel = MapToViewModel(data);
             viewModel.Items = viewModel.Items.OrderBy(o => o.ComodityDescription).ToList();
+            var detail = viewModel.Items.SelectMany(x => x.Details.Select(s => s.Colour )).ToList();
+            viewModel.ColorJoin = string.Join(", ", detail);
 
             foreach (var items in viewModel.Items)
             {

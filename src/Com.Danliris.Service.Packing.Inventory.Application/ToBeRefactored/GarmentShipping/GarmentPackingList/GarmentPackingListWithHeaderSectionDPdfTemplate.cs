@@ -719,7 +719,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             tableSign.AddCell(cellBodySignNoBorder);
             cellBodySignNoBorder.Phrase = new Phrase("", normal_font);
             tableSign.AddCell(cellBodySignNoBorder);
-            cellBodySignNoBorder.Phrase = new Phrase("( MRS. ADRIYANA DAMAYANTI )", normal_font_underlined);
+            cellBodySignNoBorder.Phrase = new Phrase("( " + viewModel.UserAuthorizedName + " )", normal_font_underlined);
             tableSign.AddCell(cellBodySignNoBorder);
 
             cellBodySignNoBorder.Phrase = new Phrase("", normal_font);
