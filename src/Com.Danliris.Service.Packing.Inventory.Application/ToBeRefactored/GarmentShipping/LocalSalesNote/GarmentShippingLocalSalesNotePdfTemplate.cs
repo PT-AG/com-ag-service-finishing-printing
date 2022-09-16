@@ -275,9 +275,10 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             document.Add(tableFooter1);
             #endregion
 
-            document.Add(new Paragraph("HARAP TRANSFER PEMBAYARAN DIATAS KEPADA BANK KORESPONDEN KAMI SEBAGAI BERIKUT :", normal_font));
-            document.Add(new Paragraph("MAYBANK INDONESIA - CABANG SLAMET RIYADI", normal_font));
-            document.Add(new Paragraph("ACC NO. : 2105010887  A/N : PT. DAN LIRIS", normal_font));
+            document.Add(new Paragraph("PROSES PAYMENT HARAP DI TRANSFER KE :", normal_font));
+            document.Add(new Paragraph("MAYBANK INDONESIA - CABANG SLAMET RIYADI, SURAKARTA", normal_font));
+            document.Add(new Paragraph("NO. REK : 2.105.03721.0", normal_font));
+            document.Add(new Paragraph("A/N : PT. AMBASSADOR GARMINDO", normal_font));
             document.Add(new Paragraph(" ", normal_font));
 
             #region sign
@@ -369,10 +370,10 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
 
             cellHeaderContent1.AddElement(new Phrase("\n", normal_font));
-            cellHeaderContent1.AddElement(new Phrase("PT. DAN LIRIS", header_font_bold));
-            cellHeaderContent1.AddElement(new Phrase("Jl. Merapi No. 23, Kel. Banaran Kec.Grogol Kab. Sukoharjo", normal_font));
-            cellHeaderContent1.AddElement(new Phrase("Telp : 0271-714400, Fax. 0271-717178", normal_font));
-            cellHeaderContent1.AddElement(new Phrase("PO. Box. 166 Solo-57100 Indonesia", normal_font));
+            cellHeaderContent1.AddElement(new Phrase("PT. AMBASSADOR GARMINDO", header_font_bold));
+            cellHeaderContent1.AddElement(new Phrase("Banaran, Grogol, Sukoharjo, Jawa Tengah", normal_font));
+            cellHeaderContent1.AddElement(new Phrase("57552", normal_font));
+            cellHeaderContent1.AddElement(new Phrase("Telp (0271) 732888, 7652913", normal_font));
             cellHeaderContent1.AddElement(new Phrase("\n", normal_font));
             tableHeader.AddCell(cellHeaderContent1);
 
