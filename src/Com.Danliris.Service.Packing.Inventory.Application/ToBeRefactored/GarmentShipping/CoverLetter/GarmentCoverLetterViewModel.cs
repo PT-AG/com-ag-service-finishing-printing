@@ -82,10 +82,10 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 yield return new ValidationResult("Telepon tidak boleh kosong", new List<string> { "phone" });
             }
 
-            if (bookingDate == null || bookingDate == DateTimeOffset.MinValue)
-            {
-                yield return new ValidationResult("Tanggal Booking Shipment tidak boleh kosong", new List<string> { "bookingDate" });
-            }
+            //if (bookingDate == null || bookingDate == DateTimeOffset.MinValue)
+            //{
+            //    yield return new ValidationResult("Tanggal Booking Shipment tidak boleh kosong", new List<string> { "bookingDate" });
+            //}
 
             if (order == null || order.Id == 0)
             {

@@ -277,13 +277,13 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             cellSign.Phrase = new Phrase("", normal_font);
             tableSign.AddCell(cellSign);
 
-            cellSign.Phrase = new Phrase("Pembukuan DL", normal_font);
+            cellSign.Phrase = new Phrase("Pembukuan AG", normal_font);
             tableSign.AddCell(cellSign);
 
             cellSign.Phrase = new Phrase("Sat Pam", normal_font);
             tableSign.AddCell(cellSign);
 
-            cellSign.Phrase = new Phrase("Konfeksi " + $"{viewModel.unit}", normal_font);
+            cellSign.Phrase = new Phrase("AG2", normal_font);
             tableSign.AddCell(cellSign);
 
             cellSign.Phrase = new Phrase("Shipping Staff", normal_font);
@@ -422,12 +422,10 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 cb.AddImage(image, inlineImage: true);
 
                 string[] headOffices = {
-                "Head Office : JL. MERAPI NO. 23 ",
-                "Banaran, Grogol, Sukoharjo 57193, Central Java, Indonesia",
-                "TELP.: (+62 271) 740888, 714400",
-                "FAX. : (+62 271) 735222, 740777",
-                "PO BOX 166 Solo, 57100",
-                "Website : www.danliris.com",
+                "PT. AMBASSADOR GARMINDO",
+                "Head Office : Banaran, Grogol, Sukoharjo, Jawa Tengah ",
+                "57552",
+                "TELP.: (0271) 732888, 7652913",
             };
                 for (int i = 0; i < headOffices.Length; i++)
                 {
