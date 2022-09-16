@@ -48,6 +48,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
         public string Description { get; set; }
         public string UserAuthorizedName { get; set; }
+        public string ColorJoin { get; set; }
 
         #endregion
 
