@@ -373,7 +373,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
         private string GenerateInvoiceNo(GarmentPackingListViewModel viewModel)
         {
-            var year = DateTime.Now.ToString("yy");
+            var year = DateTime.Now.ToString("yyyy");
 
             var prefix = $"{(viewModel.InvoiceType ?? "").Trim().ToUpper()}/{year}";
 
