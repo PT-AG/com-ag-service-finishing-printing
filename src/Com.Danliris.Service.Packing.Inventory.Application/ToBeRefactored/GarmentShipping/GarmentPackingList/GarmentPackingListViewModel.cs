@@ -62,6 +62,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
         public string SayUnit { get; set; }
         public string OtherCommodity { get; set; }
+        public double TotalQuantity { get; set; }
 
         #endregion
 
