@@ -99,7 +99,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
         private string GenerateNo()
         {
-            var year = DateTime.Now.ToString("yy");
+            var year = DateTime.Now.ToString("yyyy");
 
             var prefix = $"CN{year}";
 
