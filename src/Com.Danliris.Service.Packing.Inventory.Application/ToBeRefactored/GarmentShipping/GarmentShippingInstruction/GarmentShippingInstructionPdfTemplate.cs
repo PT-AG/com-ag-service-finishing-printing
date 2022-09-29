@@ -250,9 +250,9 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             detailTable.AddCell(cellLeft);
             cellLeft.Phrase = new Phrase(":", normal_font);
             detailTable.AddCell(cellLeft);
-            cellLeft.Phrase = new Phrase("PT. DAN LIRIS, JL. MERAPI NO. 23, KELURAHAN BANARAN, KECAMATAN GROGOL,\n" +
-                                         "SUKOHARJO 57193, INDONESIA.\n" +
-                                         "PHONE : 0271-714400  FAX : 0271-735222", normal_font);
+            cellLeft.Phrase = new Phrase("PT. AMBASSADOR GARMINDO, Banaran, Grogol, Sukoharjo, Jawa Tengah,\n" +
+                                         "57552.\n" +
+                                         "PHONE : (0271) 732888, 7652913", normal_font);
             detailTable.AddCell(cellLeft);
 
             cellLeft.Phrase = new Phrase("CONSIGNEE", normal_font);
@@ -369,10 +369,10 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             var branchOfficeY = height - marginTop + 50;
             cb.ShowTextAligned(PdfContentByte.ALIGN_LEFT, " HEAD OFFICE :", marginLeft, branchOfficeY, 0);
             string[] branchOffices = {
-                " Cable   : DANLIRIS",
-                " Phone   : (62271)740888, 714400",
-                " Website : www.danliris.com",
-                " Fax. : (62271)740777, 735222",
+                " Cable   : AMBASSADOR GARMINDO",
+                " Phone   : (0271) 732888, 7652913",
+                //" Website : ",
+                //" Fax. : (0271) 732888, 7652913",
             };
             for (int i = 0; i < branchOffices.Length; i++)
             {
@@ -388,11 +388,11 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
 
             string[] headOffices = {
-                "                                                                                                                                                                      Ref. No. : FM-00-SP-24-004",
-                "P.T. DAN LIRIS",
-                "SPINNING - WEAVING - FINISHING - PRINTING - GARMENT",
-                "JL. MERAPI No. 23, KEL. BANARAN, KEC. GROGOL, SUKOHARJO - INDONESIA",
-                "PO. BOX 166 SOLO 57100",
+                //"                                                                                                                                                                      Ref. No. : FM-00-SP-24-004",
+                "PT. AMBASSADOR GARMINDO",
+                //"SPINNING - WEAVING - FINISHING - PRINTING - GARMENT",
+                "Banaran, Grogol, Sukoharjo, Jawa Tengah",
+                "57552",
                 "                                                                                                                                                                                        Page " + (writer.PageNumber),
                // " "
             };

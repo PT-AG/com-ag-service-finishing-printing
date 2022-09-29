@@ -47,6 +47,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 		public ICollection<GarmentPackingListItemViewModel> Items { get; set; }
 
         public string Description { get; set; }
+        public string UserAuthorizedName { get; set; }
+        public string ColorJoin { get; set; }
 
         #endregion
 
@@ -60,6 +62,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
         public string SayUnit { get; set; }
         public string OtherCommodity { get; set; }
+        public double TotalQuantity { get; set; }
 
         #endregion
 

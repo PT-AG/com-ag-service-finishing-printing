@@ -51,7 +51,9 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 		public DateTimeOffset? COTPDate { get; set; }
 		public decimal TotalAmount { get; set; }
         public string DeliverTo { get; set; }
-        public ICollection<GarmentShippingInvoiceItemViewModel> Items { get;  set; }
+		public string UserAuthorizedName { get; set; }
+
+		public ICollection<GarmentShippingInvoiceItemViewModel> Items { get;  set; }
 		public ICollection<GarmentShippingInvoiceAdjustmentViewModel> GarmentShippingInvoiceAdjustments { get; set; }
         public ICollection<GarmentShippingInvoiceUnitViewModel> GarmentShippingInvoiceUnits { get; set; }
 

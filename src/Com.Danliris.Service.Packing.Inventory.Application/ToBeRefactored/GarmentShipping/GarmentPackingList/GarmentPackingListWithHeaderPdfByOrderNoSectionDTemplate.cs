@@ -757,7 +757,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
             //    var logoY = height - marginTop + 65;
 
-            //    byte[] imageByteDL = Convert.FromBase64String(Base64ImageStrings.LOGO_DANLIRIS_211_200_BW);
+            //    byte[] imageByteDL = Convert.FromBase64String(Base64ImageStrings.LOGO_AG_211_200_BW);
             //    Image imageDL = Image.GetInstance(imageByteDL);
             //    imageDL.ScaleAbsolute(60f, 60f);
             //    var newColor = System.Drawing.Color.Red;
@@ -844,7 +844,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
             #region LOGODL
 
-            byte[] imageByteDL1 = Convert.FromBase64String(Base64ImageStrings.LOGO_DANLIRIS_58_58);
+            byte[] imageByteDL1 = Convert.FromBase64String(Base64ImageStrings.LOGO_AG_58_58);
             Image imageDL1 = Image.GetInstance(imageByteDL1);
             if (imageDL1.Width > 60)
             {
@@ -876,10 +876,10 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             string[] branchOffices1 = {
                 "Banaran, Grogol, Sukoharjo 57552",
                 "Central Java, Indonesia",
-                "Tel. : (+62-271) 740888, 714400",
+                "Tel. : 0271-732888",
                 "Fax. : (+62-271) 740777, 735222",
                 "PO BOX 166 Solo, 57100",
-                "Website : www.danliris.com",
+                "Website : www.ambassadorgarmindo.com",
             };
             for (int i = 0; i < branchOffices1.Length; i++)
             {

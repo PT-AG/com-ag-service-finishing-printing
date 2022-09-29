@@ -65,12 +65,12 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Services.GarmentShipping.M
             };
      
             var model = new GarmentShippingInvoiceModel(1, "DL/219999", DateTimeOffset.Now, "", "", 1, "A99", "", "", "", "", 1, "", "", DateTimeOffset.Now, "", 1, "", 1, "", 1, "", 1, "123456", DateTimeOffset.Now,
-                                                        "", DateTimeOffset.Now, "", "", items, 1, 1, "", "", "", false, "", DateTimeOffset.Now, "", DateTimeOffset.Now, "", DateTimeOffset.Now, null, 1, "", "", null)
+                                                        "", DateTimeOffset.Now, "", "", items, 1, 1, "", "", "", false, "", DateTimeOffset.Now, "", DateTimeOffset.Now, "", DateTimeOffset.Now, null, 1, "", "", null, "")
             {
                 Id = 1
             };
 
-            var model1 = new GarmentPackingListModel("DL/219999", "", "DL", 1, "", DateTimeOffset.Now, "", "", DateTimeOffset.Now, "", 1, "", "", "", "", "", DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, true, true, "", "", "", null, 1, 1, 1, 1, null, "", "", "", "", "", "", "", false, false, 1, "", GarmentPackingListStatusEnum.CREATED, "", false, "", false, false, false, "")
+            var model1 = new GarmentPackingListModel("DL/219999", "", "DL", 1, "", DateTimeOffset.Now, "", "", DateTimeOffset.Now, "", 1, "", "", "", "", "", DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, true, true, "", "", "", null, 1, 1, 1, 1, null, "", "", "", "", "", "", "", false, false, 1, "", GarmentPackingListStatusEnum.CREATED, "", false, "", false, false, false, "", "", 1)
             {
                 Id = 1
             };
@@ -127,12 +127,12 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Services.GarmentShipping.M
             };
 
             var model = new GarmentShippingInvoiceModel(1, "DL/219999", DateTimeOffset.Now, "", "", 1, "A99", "", "", "", "", 1, "", "", DateTimeOffset.Now, "", 1, "", 1, "", 1, "", 1, "123456", DateTimeOffset.Now,
-                                                        "", DateTimeOffset.Now, "", "", items, 1, 1, "", "", "", false, "", DateTimeOffset.Now, "", DateTimeOffset.Now, "", DateTimeOffset.Now, null, 1, "", "", null)
+                                                        "", DateTimeOffset.Now, "", "", items, 1, 1, "", "", "", false, "", DateTimeOffset.Now, "", DateTimeOffset.Now, "", DateTimeOffset.Now, null, 1, "", "", null,"")
             {
                 Id = 1
             };
 
-            var model1 = new GarmentPackingListModel("DL/219999", "", "DL", 1, "", DateTimeOffset.Now, "", "", DateTimeOffset.Now, "", 1, "", "", "", "", "", DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, true, true, "", "", "", null, 1, 1, 1, 1, null, "", "", "", "", "", "", "", false, false, 1, "", GarmentPackingListStatusEnum.CREATED, "", false, "", false, false, false, "")
+            var model1 = new GarmentPackingListModel("DL/219999", "", "DL", 1, "", DateTimeOffset.Now, "", "", DateTimeOffset.Now, "", 1, "", "", "", "", "", DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, true, true, "", "", "", null, 1, 1, 1, 1, null, "", "", "", "", "", "", "", false, false, 1, "", GarmentPackingListStatusEnum.CREATED, "", false, "", false, false, false, "", "", 1)
             {
                 Id = 1
             };
@@ -195,12 +195,12 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Services.GarmentShipping.M
             var model = new List<GarmentShippingInvoiceModel>
             {
                 new GarmentShippingInvoiceModel(1, "DL/219999", DateTimeOffset.Now, "", "", 1, "A99", "", "", "", "", 1, "", "", DateTimeOffset.Now, "", 1, "", 1, "", 1, "", 1, "123456", DateTimeOffset.Now,
-                                                "", DateTimeOffset.Now, "", "", items, 1, 1, "", "", "", false, "", DateTimeOffset.Now, "", DateTimeOffset.Now, "", DateTimeOffset.Now, null, 1, "", "", null)
+                                                "", DateTimeOffset.Now, "", "", items, 1, 1, "", "", "", false, "", DateTimeOffset.Now, "", DateTimeOffset.Now, "", DateTimeOffset.Now, null, 1, "", "", null, "")
                     {
                       Id = 1
                     },
                 new GarmentShippingInvoiceModel(2, "DL/218888", DateTimeOffset.Now, "", "", 1, "A99", "", "", "", "", 1, "", "", DateTimeOffset.Now, "", 1, "", 1, "", 1, "", 1, "123456", DateTimeOffset.Now,
-                                                "", DateTimeOffset.Now, "", "", items, 1, 1, "", "", "", false, "", DateTimeOffset.Now, "", DateTimeOffset.Now, "", DateTimeOffset.Now, null, 1, "", "", null)
+                                                "", DateTimeOffset.Now, "", "", items, 1, 1, "", "", "", false, "", DateTimeOffset.Now, "", DateTimeOffset.Now, "", DateTimeOffset.Now, null, 1, "", "", null, "")
                     {
                       Id = 2
                     },
@@ -209,11 +209,11 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Services.GarmentShipping.M
 
             var model1 = new List<GarmentPackingListModel>
             {
-                new GarmentPackingListModel("DL/219999", "", "DL", 1, "", DateTimeOffset.Now, "", "", DateTimeOffset.Now, "", 1, "", "", "", "", "", DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, true, true, "", "", "", null, 1, 1, 1, 1, null, "", "", "", "", "", "", "", false, false, 1, "", GarmentPackingListStatusEnum.CREATED, "", false, "", false, false, false,"")
+                new GarmentPackingListModel("DL/219999", "", "DL", 1, "", DateTimeOffset.Now, "", "", DateTimeOffset.Now, "", 1, "", "", "", "", "", DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, true, true, "", "", "", null, 1, 1, 1, 1, null, "", "", "", "", "", "", "", false, false, 1, "", GarmentPackingListStatusEnum.CREATED, "", false, "", false, false, false,"", "", 1)
                     {
                        Id = 1
                     },
-                new GarmentPackingListModel("DL/218888", "", "DL", 1, "", DateTimeOffset.Now, "", "", DateTimeOffset.Now, "", 1, "", "", "", "", "", DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, true, true, "", "", "", null, 1, 1, 1, 1, null, "", "", "", "", "", "", "", false, false, 1, "", GarmentPackingListStatusEnum.CREATED, "", false, "", false, false, false,"")
+                new GarmentPackingListModel("DL/218888", "", "DL", 1, "", DateTimeOffset.Now, "", "", DateTimeOffset.Now, "", 1, "", "", "", "", "", DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, true, true, "", "", "", null, 1, 1, 1, 1, null, "", "", "", "", "", "", "", false, false, 1, "", GarmentPackingListStatusEnum.CREATED, "", false, "", false, false, false,"", "", 1)
                     {
                        Id = 2
                     },

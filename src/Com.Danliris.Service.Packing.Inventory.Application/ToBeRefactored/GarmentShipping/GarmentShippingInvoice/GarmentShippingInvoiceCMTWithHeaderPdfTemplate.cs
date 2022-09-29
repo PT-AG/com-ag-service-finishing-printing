@@ -84,8 +84,10 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             bodyTable.WidthPercentage = 100;
 
             #region Set Body Table Header
-            PdfPCell bodyTableHeader = new PdfPCell();// { FixedHeight = 20 };
+            PdfPCell bodyTableHeader = new PdfPCell() { Border = Rectangle.BOTTOM_BORDER | Rectangle.RIGHT_BORDER | Rectangle.LEFT_BORDER, HorizontalAlignment = Element.ALIGN_CENTER, VerticalAlignment = Element.ALIGN_MIDDLE };// { FixedHeight = 20 };
             //PdfPCell table1RightCellHeader = new PdfPCell() { FixedHeight = 20, Colspan = 4 };
+            PdfPCell bodyTableHeader_Line = new PdfPCell() { Border = Rectangle.BOTTOM_BORDER, Colspan = 10, Padding = 0.5f, Phrase = new Phrase("") };
+            bodyTable.AddCell(bodyTableHeader_Line);
 
             bodyTableHeader.Phrase = new Phrase("DESCRIPTION", normal_font);
             bodyTableHeader.HorizontalAlignment = Element.ALIGN_CENTER;
@@ -98,6 +100,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             bodyTableHeader.Phrase = new Phrase("QUANTITY", normal_font);
             bodyTableHeader.HorizontalAlignment = Element.ALIGN_CENTER;
             bodyTableHeader.VerticalAlignment = Element.ALIGN_CENTER;
+            bodyTableHeader.Rowspan = 2;
             bodyTableHeader.Colspan = 2;
             bodyTable.AddCell(bodyTableHeader);
 
@@ -121,6 +124,24 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             bodyTableHeader.Phrase = new Phrase("TOTAL PRICE\n" + "CMT IN USD", normal_font);
             bodyTableHeader.HorizontalAlignment = Element.ALIGN_CENTER;
             bodyTableHeader.VerticalAlignment = Element.ALIGN_CENTER;
+            bodyTable.AddCell(bodyTableHeader);
+
+            bodyTableHeader.Phrase = new Phrase("PO Buyer", normal_font);
+            bodyTableHeader.Rowspan = 1;
+            bodyTable.AddCell(bodyTableHeader);
+
+            bodyTableHeader.Phrase = new Phrase("Article", normal_font);
+            bodyTable.AddCell(bodyTableHeader);
+
+            bodyTableHeader.Phrase = new Phrase("Colour", normal_font);
+            bodyTable.AddCell(bodyTableHeader);
+
+            bodyTableHeader.Phrase = new Phrase("Remark", normal_font);
+            bodyTable.AddCell(bodyTableHeader);
+
+            bodyTableHeader.Phrase = new Phrase("", normal_font);
+            bodyTableHeader.Border = Rectangle.NO_BORDER;
+            bodyTableHeader.Colspan = 2;
             bodyTable.AddCell(bodyTableHeader);
 
             //bodyTableHeader.Phrase = new Phrase("", normal_font);
@@ -738,7 +759,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
             #region LOGODL
 
-            byte[] imageByteDL = Convert.FromBase64String(Base64ImageStrings.LOGO_DANLIRIS_58_58);
+            byte[] imageByteDL = Convert.FromBase64String(Base64ImageStrings.LOGO_AG_58_58);
             Image imageDL = Image.GetInstance(imageByteDL);
             if (imageDL.Width > 60)
             {
@@ -769,14 +790,12 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             image1.SetAbsolutePosition(marginLeft + 80, height - image1.ScaledHeight - marginTop + 75);
             cb.AddImage(image1, inlineImage: true);
 
-            cb.ShowTextAligned(PdfContentByte.ALIGN_LEFT, "Head Office : Jl. Merapi No. 23", marginLeft + 80, branchOfficeY, 0);
+            cb.ShowTextAligned(PdfContentByte.ALIGN_LEFT, "Head Office :", marginLeft + 80, branchOfficeY, 0);
             string[] branchOffices = {
-                "Banaran, Grogol, Sukoharjo 57552",
-                "Central Java, Indonesia",
-                "Tel. : (+62-271) 740888, 714400",
-                "Fax. : (+62-271) 740777, 735222",
-                "PO BOX 166 Solo, 57100",
-                "Website : www.danliris.com",
+                "Banaran, Grogol, Sukoharjo, Jawa Tengah",
+                "57552",
+                "Telp. (0271) 732888, 7652913",
+                "Website : www.ambassadorgarmindo.com",
             };
             for (int i = 0; i < branchOffices.Length; i++)
             {
@@ -1006,7 +1025,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             var printY = document.BottomMargin - 20;
             var signX = document.RightMargin + 500;
             var signY = printY + 20;
-            cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, "( MRS. ADRIYANA DAMAYANTI )", document.RightMargin + 500, signY, 0);
+            cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, "( " + viewModel.UserAuthorizedName + " )", document.RightMargin + 500, signY, 0);
             cb.MoveTo(signX - 60, signY - 2);
             cb.LineTo(signX + 45, signY - 2);
             cb.Stroke();

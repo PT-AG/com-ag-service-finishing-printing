@@ -600,7 +600,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Dyei
 
             //    var logoY = height - marginTop + 65;
 
-            //    byte[] imageByteDL = Convert.FromBase64String(Base64ImageStrings.LOGO_DANLIRIS_211_200_BW);
+            //    byte[] imageByteDL = Convert.FromBase64String(Base64ImageStrings.LOGO_AG_211_200_BW);
             //    Image imageDL = Image.GetInstance(imageByteDL);
             //    imageDL.ScaleAbsolute(60f, 60f);
             //    var newColor = System.Drawing.Color.Red;

@@ -252,14 +252,14 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 float height = writer.PageSize.Height, width = writer.PageSize.Width;
                 float marginLeft = document.LeftMargin - 10, marginTop = document.TopMargin, marginRight = document.RightMargin - 10;
 
-                cb.SetFontAndSize(bf, 6);
+                cb.SetFontAndSize(bf, 10);
 
                 #region LEFT
 
 
                 var branchOfficeY = height - marginTop + 70;
 
-                byte[] imageByteDL = Convert.FromBase64String(Base64ImageStrings.LOGO_DANLIRIS_58_58);
+                byte[] imageByteDL = Convert.FromBase64String(Base64ImageStrings.LOGO_AG_58_58);
                 Image imageDL = Image.GetInstance(imageByteDL);
                 imageDL.SetAbsolutePosition(marginLeft, branchOfficeY);
                 cb.AddImage(imageDL, inlineImage: true);
@@ -275,29 +275,27 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 var headOfficeX = width / 2 - 200;
                 var headOfficeY = height - marginTop + 110;
 
-                byte[] imageByte = Convert.FromBase64String(Base64ImageStrings.LOGO_NAME);
-                Image image = Image.GetInstance(imageByte);
-                if (image.Width > 160)
-                {
-                    float percentage = 0.0f;
-                    percentage = 160 / image.Width;
-                    image.ScalePercent(percentage * 100);
-                }
-                image.SetAbsolutePosition(headOfficeX, headOfficeY);
-                cb.AddImage(image, inlineImage: true);
+                //byte[] imageByte = Convert.FromBase64String(Base64ImageStrings.LOGO_NAME);
+                //Image image = Image.GetInstance(imageByte);
+                //if (image.Width > 160)
+                //{
+                //    float percentage = 0.0f;
+                //    percentage = 160 / image.Width;
+                //    image.ScalePercent(percentage * 100);
+                //}
+                //image.SetAbsolutePosition(headOfficeX, headOfficeY);
+                //cb.AddImage(image, inlineImage: true);
 
                 string[] headOffices = {
-                "Head Office : JL. MERAPI NO. 23 ",
-                "Banaran, Grogol, Sukoharjo 57193",
-                "Central Java, Indonesia",
-                "TELP.: (+62 271) 740888, 714400" ,
-                "FAX. : (+62 271) 735222, 740777" ,
-                "PO BOX 166 Solo, 57100",
-                "Website : www.danliris.com",
-            };
+                "PT. AMBASSADOR GARMINDO",
+                "Banaran, Grogol, Sukoharjo, Jawa Tengah",
+                "57552",
+                "Telp (0271) 732888, 7652913",
+                };
+
                 for (int i = 0; i < headOffices.Length; i++)
                 {
-                    cb.ShowTextAligned(PdfContentByte.ALIGN_LEFT, headOffices[i], headOfficeX, headOfficeY - image.ScaledHeight - (i * 10), 0);
+                    cb.ShowTextAligned(PdfContentByte.ALIGN_LEFT, headOffices[i], headOfficeX, headOfficeY - 0 - (i * 10), 0);
                 }
 
                 #endregion
