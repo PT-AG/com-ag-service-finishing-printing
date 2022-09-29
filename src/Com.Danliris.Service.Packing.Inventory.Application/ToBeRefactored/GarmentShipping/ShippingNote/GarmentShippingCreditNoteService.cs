@@ -53,6 +53,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                     Name = model.BuyerName
                 },
                 totalAmount = model.TotalAmount,
+                userAuthorizedName = model.UserAuthorizedName,
 
                 items = (model.Items ?? new List<GarmentShippingNoteItemModel>()).Select(i => new GarmentShippingNoteItemViewModel
                 {
@@ -91,14 +92,14 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             }).ToList();
 
             viewModel.buyer = viewModel.buyer ?? new Buyer();
-            GarmentShippingNoteModel model = new GarmentShippingNoteModel(GarmentShippingNoteTypeEnum.CN, GenerateNo(), viewModel.date.GetValueOrDefault(), viewModel.buyer.Id, viewModel.buyer.Code, viewModel.buyer.Name, viewModel.description, viewModel.receiptNo, viewModel.receiptDate.GetValueOrDefault(), 0, null, null, viewModel.totalAmount, items);
+            GarmentShippingNoteModel model = new GarmentShippingNoteModel(GarmentShippingNoteTypeEnum.CN, GenerateNo(), viewModel.date.GetValueOrDefault(), viewModel.buyer.Id, viewModel.buyer.Code, viewModel.buyer.Name, viewModel.description, viewModel.receiptNo, viewModel.receiptDate.GetValueOrDefault(), 0, null, null, viewModel.totalAmount, viewModel.userAuthorizedName, items);
 
             return model;
         }
 
         private string GenerateNo()
         {
-            var year = DateTime.Now.ToString("yy");
+            var year = DateTime.Now.ToString("yyyy");
 
             var prefix = $"CN{year}";
 

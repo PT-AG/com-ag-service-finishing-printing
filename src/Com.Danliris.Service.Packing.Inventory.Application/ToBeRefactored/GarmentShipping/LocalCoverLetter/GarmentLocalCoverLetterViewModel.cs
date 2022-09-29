@@ -33,10 +33,10 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 yield return new ValidationResult("Tanggal tidak boleh kosong", new List<string> { "date" });
             }
 
-            if (bcdate == null || bcdate == DateTimeOffset.MinValue)
-            {
-                yield return new ValidationResult("Tanggal BC tidak boleh kosong", new List<string> { "bcdate" });
-            }
+            //if (bcdate == null || bcdate == DateTimeOffset.MinValue)
+            //{
+            //    yield return new ValidationResult("Tanggal BC tidak boleh kosong", new List<string> { "bcdate" });
+            //}
 
             if (buyer == null || buyer.Id == 0)
             {
@@ -48,10 +48,10 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 yield return new ValidationResult("Truck tidak boleh kosong", new List<string> { "truck" });
             }
 
-            if (string.IsNullOrEmpty(bcNo))
-            {
-                yield return new ValidationResult("No BC tidak boleh kosong", new List<string> { "bcNo" });
-            }
+            //if (string.IsNullOrEmpty(bcNo))
+            //{
+            //    yield return new ValidationResult("No BC tidak boleh kosong", new List<string> { "bcNo" });
+            //}
 
             if (string.IsNullOrEmpty(plateNumber))
             {

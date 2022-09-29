@@ -50,6 +50,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.Gar
 
         public string Description { get; private set; }
 
+        public string UserAuthorizedName { get; private set; }
 
         #endregion
 
@@ -63,6 +64,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.Gar
 
         public string SayUnit { get; private set; }
         public string OtherCommodity { get; private set; }
+        public double TotalQuantity { get; private set; }
 
         #endregion
 
@@ -96,7 +98,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.Gar
             StatusActivities = new HashSet<GarmentPackingListStatusActivityModel>();
         }
 
-        public GarmentPackingListModel(string invoiceNo, string packingListType, string invoiceType, int sectionId, string sectionCode, DateTimeOffset date, string paymentTerm, string lCNo, DateTimeOffset lCDate, string issuedBy, int buyerAgentId, string buyerAgentCode, string buyerAgentName, string destination, string finalDestination, string shipmentMode, DateTimeOffset truckingDate, DateTimeOffset truckingEstimationDate, DateTimeOffset exportEstimationDate, bool omzet, bool accounting, string fabricCountryOrigin, string fabricComposition, string remarkMd, ICollection<GarmentPackingListItemModel> items, double grossWeight, double nettWeight, double netNetWeight, double totalCartons, ICollection<GarmentPackingListMeasurementModel> measurements, string sayUnit, string shippingMark, string sideMark, string remark, string shippingMarkImagePath, string sideMarkImagePath, string remarkImagePath, bool isUsed, bool isPosted, int shippingStaffId, string shippingStaffName, GarmentPackingListStatusEnum status, string description, bool isCostStructured, string otherCommodity, bool isShipping, bool isSampleDelivered, bool isSampleExpenditureGood, string sampleRemarkMd)
+        public GarmentPackingListModel(string invoiceNo, string packingListType, string invoiceType, int sectionId, string sectionCode, DateTimeOffset date, string paymentTerm, string lCNo, DateTimeOffset lCDate, string issuedBy, int buyerAgentId, string buyerAgentCode, string buyerAgentName, string destination, string finalDestination, string shipmentMode, DateTimeOffset truckingDate, DateTimeOffset truckingEstimationDate, DateTimeOffset exportEstimationDate, bool omzet, bool accounting, string fabricCountryOrigin, string fabricComposition, string remarkMd, ICollection<GarmentPackingListItemModel> items, double grossWeight, double nettWeight, double netNetWeight, double totalCartons, ICollection<GarmentPackingListMeasurementModel> measurements, string sayUnit, string shippingMark, string sideMark, string remark, string shippingMarkImagePath, string sideMarkImagePath, string remarkImagePath, bool isUsed, bool isPosted, int shippingStaffId, string shippingStaffName, GarmentPackingListStatusEnum status, string description, bool isCostStructured, string otherCommodity, bool isShipping, bool isSampleDelivered, bool isSampleExpenditureGood, string sampleRemarkMd, string userAuthorizedName, double totalQuantity)
         {
             InvoiceNo = invoiceNo;
             PackingListType = packingListType;
@@ -148,6 +150,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.Gar
             IsSampleDelivered = isSampleDelivered;
             IsSampleExpenditureGood = isSampleExpenditureGood;
 			SampleRemarkMd = sampleRemarkMd;
+            UserAuthorizedName = userAuthorizedName;
+            TotalQuantity = totalQuantity;
         }
 
         public void SetPackingListType(string packingListType, string userName, string userAgent)
@@ -383,6 +387,15 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.Gar
             }
         }
 
+        public void SetTotalQuantity(double totalQuantity, string userName, string userAgent)
+        {
+            if (TotalQuantity != totalQuantity)
+            {
+                TotalQuantity = totalQuantity;
+                this.FlagForUpdate(userName, userAgent);
+            }
+        }
+
         //public void SetMeasurements(string measurements, string userName, string userAgent)
         //{
         //    if (Measurements != measurements)
@@ -563,5 +576,14 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.Gar
 				this.FlagForUpdate(userName, userAgent);
 			}
 		}
-	}
+
+        public void SetUserAuthorizedName(string userAuthorizedName, string userName, string userAgent)
+        {
+            if (UserAuthorizedName != userAuthorizedName)
+            {
+                UserAuthorizedName = userAuthorizedName;
+                this.FlagForUpdate(userName, userAgent);
+            }
+        }
+    }
 }

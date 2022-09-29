@@ -136,6 +136,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Gar
             modelToUpdate.SetConsigneeAddress(model.ConsigneeAddress, _identityProvider.Username, USER_AGENT);
 			modelToUpdate.SetDeliverTo(model.DeliverTo, _identityProvider.Username, USER_AGENT);
 			modelToUpdate.SetInvoiceDate(model.InvoiceDate, _identityProvider.Username, USER_AGENT);
+			modelToUpdate.SetUserAuthorizedName(model.UserAuthorizedName, _identityProvider.Username, USER_AGENT);
 
 
 			foreach (var itemToUpdate in modelToUpdate.Items)

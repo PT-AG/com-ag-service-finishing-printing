@@ -4,14 +4,16 @@ using Com.Danliris.Service.Packing.Inventory.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Migrations
 {
     [DbContext(typeof(PackingInventoryDbContext))]
-    partial class PackingInventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220916020044_Add_Column_UserAuthorizedName_GarmentShippingInvoice")]
+    partial class Add_Column_UserAuthorizedName_GarmentShippingInvoice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2582,8 +2584,6 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Migrations
 
                     b.Property<double>("TotalCartons");
 
-                    b.Property<double>("TotalQuantity");
-
                     b.Property<DateTimeOffset>("TruckingDate");
 
                     b.Property<DateTimeOffset>("TruckingEstimationDate");
@@ -4844,8 +4844,6 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Migrations
                     b.Property<string>("ReceiptNo");
 
                     b.Property<double>("TotalAmount");
-
-                    b.Property<string>("UserAuthorizedName");
 
                     b.HasKey("Id");
 

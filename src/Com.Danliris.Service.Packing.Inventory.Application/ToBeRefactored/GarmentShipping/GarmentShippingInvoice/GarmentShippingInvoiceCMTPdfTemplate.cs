@@ -171,8 +171,11 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             bodyTable.WidthPercentage = 100;
 
             #region Set Body Table Header
-            PdfPCell bodyTableHeader = new PdfPCell();// { FixedHeight = 20 };
+            PdfPCell bodyTableHeader = new PdfPCell() { Border = Rectangle.BOTTOM_BORDER | Rectangle.RIGHT_BORDER | Rectangle.LEFT_BORDER, HorizontalAlignment = Element.ALIGN_CENTER };// { FixedHeight = 20 };
             //PdfPCell table1RightCellHeader = new PdfPCell() { FixedHeight = 20, Colspan = 4 };
+
+            PdfPCell bodyTableHeader_Line = new PdfPCell() { Border = Rectangle.BOTTOM_BORDER, Colspan = 10, Padding = 0.5f, Phrase = new Phrase("") };
+            bodyTable.AddCell(bodyTableHeader_Line);
 
             bodyTableHeader.Phrase = new Phrase("DESCRIPTION", normal_font);
             bodyTableHeader.HorizontalAlignment = Element.ALIGN_CENTER;
@@ -185,6 +188,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             bodyTableHeader.Phrase = new Phrase("QUANTITY", normal_font);
             bodyTableHeader.HorizontalAlignment = Element.ALIGN_CENTER;
             bodyTableHeader.VerticalAlignment = Element.ALIGN_CENTER;
+            bodyTableHeader.Rowspan = 2;
             bodyTableHeader.Colspan = 2;
             bodyTable.AddCell(bodyTableHeader);
 
@@ -208,6 +212,24 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             bodyTableHeader.Phrase = new Phrase("TOTAL PRICE\n" + "CMT IN USD", normal_font);
             bodyTableHeader.HorizontalAlignment = Element.ALIGN_CENTER;
             bodyTableHeader.VerticalAlignment = Element.ALIGN_CENTER;
+            bodyTable.AddCell(bodyTableHeader);
+
+            bodyTableHeader.Phrase = new Phrase("PO Buyer", normal_font);
+            bodyTableHeader.Rowspan = 1;
+            bodyTable.AddCell(bodyTableHeader);
+
+            bodyTableHeader.Phrase = new Phrase("Article", normal_font);
+            bodyTable.AddCell(bodyTableHeader);
+
+            bodyTableHeader.Phrase = new Phrase("Colour", normal_font);
+            bodyTable.AddCell(bodyTableHeader);
+
+            bodyTableHeader.Phrase = new Phrase("Remark", normal_font);
+            bodyTable.AddCell(bodyTableHeader);
+
+            bodyTableHeader.Phrase = new Phrase("", normal_font);
+            bodyTableHeader.Border = Rectangle.NO_BORDER;
+            bodyTableHeader.Colspan = 2;
             bodyTable.AddCell(bodyTableHeader);
 
             //bodyTableHeader.Phrase = new Phrase("", normal_font);
@@ -1037,7 +1059,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             var printY = document.BottomMargin - 100;
             var signX = document.RightMargin + 500;
             var signY = printY + 20;
-            cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, "( MRS. ADRIYANA DAMAYANTI )", document.RightMargin + 500, signY + 5, 0);
+            cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, "( " + viewModel.UserAuthorizedName +" )", document.RightMargin + 500, signY + 5, 0);
             cb.MoveTo(signX - 55, signY - 2);
             cb.LineTo(signX + 55, signY - 2);
             cb.Stroke();
