@@ -40,7 +40,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.EntityConfigurat
 
 			configuration
 				.Property(inventoryDocument => inventoryDocument.RONo)
-				.HasMaxLength(10);
+				.HasMaxLength(25);
 
 			configuration
 				.Property(inventoryDocument => inventoryDocument.SCNo)
