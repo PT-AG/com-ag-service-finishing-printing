@@ -121,6 +121,10 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.EntityConfigurat
 				.HasMaxLength(50);
 
 			configuration
+				.Property(shippingInvoice => shippingInvoice.PackingListType)
+				.HasMaxLength(50);
+
+			configuration
 				.Property(shippingInvoice => shippingInvoice.Description)
 				.HasColumnType("text");
 

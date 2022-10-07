@@ -24,7 +24,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             Font bold_font = FontFactory.GetFont(BaseFont.HELVETICA_BOLD, BaseFont.CP1250, BaseFont.NOT_EMBEDDED, 7);
             //Font body_bold_font = FontFactory.GetFont(BaseFont.HELVETICA_BOLD, BaseFont.CP1250, BaseFont.NOT_EMBEDDED, 8);
 
-            Document document = new Document(PageSize.A4, MARGIN, MARGIN, 290, 150);
+            //Document document = new Document(PageSize.A4, MARGIN, MARGIN, 290, 150);
+            Document document = new Document(PageSize.A4, MARGIN, MARGIN, 200, 150);
             MemoryStream stream = new MemoryStream();
             PdfWriter writer = PdfWriter.GetInstance(document, stream);
 
@@ -802,13 +803,16 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             var headOfficeY = height - marginTop + 190;
 
 
-            string[] headOffices = {
-                "                                                                                                                                               Ref. No. : FM-00-SP-24-006",
-            };
-            for (int i = 0; i < headOffices.Length; i++)
-            {
-                cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, headOffices[i], headOfficeX, headOfficeY, 0);
-            }
+            //string[] headOffices = {
+            //    "                                                                                                                                               Ref. No. : FM-00-SP-24-006",
+            //};
+            //string[] headOffices = {
+            //    "                                                                                                                                             ",
+            //};
+            //for (int i = 0; i < headOffices.Length; i++)
+            //{
+            //    cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, headOffices[i], headOfficeX, headOfficeY, 0);
+            //}
 
             #endregion
 
