@@ -867,13 +867,13 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             var headOfficeY = height - marginTop + 190;
 
 
-            string[] headOffices = {
-                "                                                                                                                                               Ref. No. : FM-00-SP-24-006",
-            };
-            for (int i = 0; i < headOffices.Length; i++)
-            {
-                cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, headOffices[i], headOfficeX, headOfficeY, 0);
-            }
+            //string[] headOffices = {
+            //    "                                                                                                                                               Ref. No. : FM-00-SP-24-006",
+            //};
+            //for (int i = 0; i < headOffices.Length; i++)
+            //{
+            //    cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, headOffices[i], headOfficeX, headOfficeY, 0);
+            //}
 
             #endregion
 
