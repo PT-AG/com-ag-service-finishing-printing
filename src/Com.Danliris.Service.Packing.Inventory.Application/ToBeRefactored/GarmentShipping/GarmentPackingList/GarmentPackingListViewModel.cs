@@ -150,6 +150,11 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 yield return new ValidationResult("Buyer Agent tidak boleh kosong", new List<string> { "BuyerAgent" });
             }
 
+            if (ShippingStaff == null || ShippingStaff.id == 0)
+            {
+                yield return new ValidationResult("Staff Shipping tidak boleh kosong", new List<string> { "ShippingStaff" });
+            }
+
             if (string.IsNullOrEmpty(Destination))
             {
                 yield return new ValidationResult("Destination tidak boleh kosong", new List<string> { "Destination" });
