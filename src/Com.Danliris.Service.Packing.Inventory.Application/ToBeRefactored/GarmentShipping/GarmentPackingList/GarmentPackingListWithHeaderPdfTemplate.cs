@@ -159,6 +159,12 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             tableDescription.SpacingAfter = 10f;
             if (viewModel.PaymentTerm == "LC")
             {
+                cellDescription.Phrase = new Phrase("    BUYER", normal_font);
+                tableDescription.AddCell(cellDescription);
+                cellDescription.Phrase = new Phrase("  :", normal_font);
+                tableDescription.AddCell(cellDescription);
+                cellDescription.Phrase = new Phrase("  " + viewModel.BuyerAgent.Name, normal_font);
+                tableDescription.AddCell(cellDescription);
                 cellDescription.Phrase = new Phrase("    LC No.", normal_font);
                 tableDescription.AddCell(cellDescription);
                 cellDescription.Phrase = new Phrase("  :", normal_font);
@@ -180,6 +186,12 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             }
             else
             {
+                cellDescription.Phrase = new Phrase("    BUYER", normal_font);
+                tableDescription.AddCell(cellDescription);
+                cellDescription.Phrase = new Phrase("  :", normal_font);
+                tableDescription.AddCell(cellDescription);
+                cellDescription.Phrase = new Phrase("  " + viewModel.BuyerAgent.Name, normal_font);
+                tableDescription.AddCell(cellDescription);
                 cellDescription.Phrase = new Phrase("    PAYMENT TERM", normal_font);
                 tableDescription.AddCell(cellDescription);
                 cellDescription.Phrase = new Phrase("  :", normal_font);
@@ -233,10 +245,10 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                         sizes[size.Size.SizeIdx] = size.Size.Size;
                     }
                 }
-                PdfPTable tableDetail = new PdfPTable(SIZES_COUNT + (viewModel.InvoiceType == "DL" ? 11 : 8));
+                PdfPTable tableDetail = new PdfPTable(SIZES_COUNT + (viewModel.InvoiceType == "AG" ? 11 : 8));
                 var width = new List<float> { 2f, 3.5f, 4f, 4f };
                 for (int i = 0; i < SIZES_COUNT; i++) width.Add(1f);
-                if (viewModel.InvoiceType == "DL")
+                if (viewModel.InvoiceType == "AG")
                 {
                     width.AddRange(new List<float> { 1.5f, 1f, 1.5f, 2f, 1.5f, 1.5f, 1.5f });
                 }
@@ -273,7 +285,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 tableDetail.AddCell(cellBorderBottomRight);
                 cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk("UNIT", normal_font, 0.75f));
                 tableDetail.AddCell(cellBorderBottomRight);
-                if (viewModel.InvoiceType == "DL")
+                if (viewModel.InvoiceType == "AG")
                 {
                     cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk("GW/\nCTN", normal_font, 0.75f));
                     cellBorderBottomRight.Rowspan = 2;
@@ -359,7 +371,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                     tableDetail.AddCell(cellBorderBottomRight);
                     cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk(uom, normal_font, 0.6f));
                     tableDetail.AddCell(cellBorderBottomRight);
-                    if (viewModel.InvoiceType == "DL")
+                    if (viewModel.InvoiceType == "AG")
                     {
                         cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk(string.Format("{0:n2}", detail.GrossWeight), normal_font, 0.6f));
                         tableDetail.AddCell(cellBorderBottomRight);
@@ -400,7 +412,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 tableDetail.AddCell(cellBorderBottomRight);
                 cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk("", normal_font, 0.6f));
                 tableDetail.AddCell(cellBorderBottomRight);
-                if (viewModel.InvoiceType == "DL")
+                if (viewModel.InvoiceType == "AG")
                 {
                     cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk("", normal_font, 0.6f));
                     tableDetail.AddCell(cellBorderBottomRight);
@@ -424,7 +436,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 tableDetail.AddCell(new PdfPCell()
                 {
                     Border = Rectangle.BOTTOM_BORDER,
-                    Colspan = SIZES_COUNT + (viewModel.InvoiceType == "DL" ? 6 : 3),
+                    Colspan = SIZES_COUNT + (viewModel.InvoiceType == "AG" ? 6 : 3),
                     Padding = 5,
                     Phrase = new Phrase("SUB TOTAL .............................................................................................................................................. ", normal_font)
                 });
@@ -440,7 +452,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 tableDetail.AddCell(new PdfPCell()
                 {
                     Border = Rectangle.BOTTOM_BORDER,
-                    Colspan = SIZES_COUNT + (viewModel.InvoiceType == "DL" ? 11 : 8),
+                    Colspan = SIZES_COUNT + (viewModel.InvoiceType == "AG" ? 11 : 8),
                     Phrase = new Phrase($"      - Sub Ctns = {subCtns}           - Sub G.W. = {String.Format("{0:0.00}", item.Details.Select(d => new { d.Index, d.Carton1, d.Carton2, TotalGrossWeight = d.CartonQuantity * d.GrossWeight }).GroupBy(g => new { g.Index, g.Carton1, g.Carton2 }, (key, value) => value.First().TotalGrossWeight).Sum())} Kgs           - Sub N.W. = {String.Format("{0:0.00}", item.Details.Select(d => new { d.Index, d.Carton1, d.Carton2, TotalNetWeight = d.CartonQuantity * d.NetWeight }).GroupBy(g => new { g.Index, g.Carton1, g.Carton2 }, (key, value) => value.First().TotalNetWeight).Sum())} Kgs            - Sub N.N.W. = {String.Format("{0:0.00}", item.Details.Select(d => new { d.Index, d.Carton1, d.Carton2, TotalNetNetWeight = d.CartonQuantity * d.NetNetWeight }).GroupBy(g => new { g.Index, g.Carton1, g.Carton2 }, (key, value) => value.First().TotalNetNetWeight).Sum())} Kgs", normal_font)
                 });
 
