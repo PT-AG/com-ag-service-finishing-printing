@@ -52,7 +52,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 		public decimal TotalAmount { get; set; }
         public string DeliverTo { get; set; }
 		public string UserAuthorizedName { get; set; }
-
+		public string PackingListType { get; set; }
 		public ICollection<GarmentShippingInvoiceItemViewModel> Items { get;  set; }
 		public ICollection<GarmentShippingInvoiceAdjustmentViewModel> GarmentShippingInvoiceAdjustments { get; set; }
         public ICollection<GarmentShippingInvoiceUnitViewModel> GarmentShippingInvoiceUnits { get; set; }
