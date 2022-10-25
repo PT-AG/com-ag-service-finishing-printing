@@ -1,4 +1,4 @@
-﻿using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Utilities;
+using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Utilities;
 using Com.Danliris.Service.Packing.Inventory.Infrastructure.IdentityProvider;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
@@ -9,11 +9,11 @@ using System.Linq;
 
 namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.GarmentPackingList
 {
-    public class GarmentPackingListPdfTemplate
+    public class GarmentPackingListWithHeaderSamplePdfTemplate
     {
         private IIdentityProvider _identityProvider;
 
-        public GarmentPackingListPdfTemplate(IIdentityProvider identityProvider)
+        public GarmentPackingListWithHeaderSamplePdfTemplate(IIdentityProvider identityProvider)
         {
             _identityProvider = identityProvider;
         }
@@ -136,54 +136,67 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             Font normal_font_underlined = FontFactory.GetFont(BaseFont.HELVETICA, BaseFont.CP1250, BaseFont.NOT_EMBEDDED, 8, Font.UNDERLINE);
             Font bold_font = FontFactory.GetFont(BaseFont.HELVETICA_BOLD, BaseFont.CP1250, BaseFont.NOT_EMBEDDED, 8);
 
-            Document document = new Document(sizesCount ? PageSize.A4.Rotate() : PageSize.A4, 20, 20, 170, 60);
+            Document document = new Document(sizesCount ? PageSize.A4.Rotate() : PageSize.A4, 20, 20, 90, 60);
             MemoryStream stream = new MemoryStream();
             PdfWriter writer = PdfWriter.GetInstance(document, stream);
 
-            writer.PageEvent = new GarmentPackingListPDFTemplatePageEvent(_identityProvider, viewModel);
+            writer.PageEvent = new GarmentPackingListWithHeaderSamplePDFTemplatePageEvent(_identityProvider, viewModel);
 
             document.Open();
 
             #region Description
 
             PdfPTable tableDescription = new PdfPTable(3);
-            tableDescription.SetWidths(new float[] { 2f, 0.2f, 7.8f });
+            tableDescription.SetWidths(new float[] { 2.5f, 0.2f, 7.3f });
             PdfPCell cellDescription = new PdfPCell() { Border = Rectangle.NO_BORDER };
 
-            cellDescription.Phrase = new Phrase(cprice, normal_font);
+            cellDescription.Phrase = new Phrase("    "+cprice, normal_font);
             tableDescription.AddCell(cellDescription);
-            cellDescription.Phrase = new Phrase(":", normal_font);
+            cellDescription.Phrase = new Phrase("  :", normal_font);
             tableDescription.AddCell(cellDescription);
-            cellDescription.Phrase = new Phrase(fob, normal_font);
+            cellDescription.Phrase = new Phrase("  "+fob, normal_font);
             tableDescription.AddCell(cellDescription);
+            tableDescription.SpacingAfter = 10f;
             if (viewModel.PaymentTerm == "LC")
             {
-                cellDescription.Phrase = new Phrase("LC No.", normal_font);
+                cellDescription.Phrase = new Phrase("    BUYER", normal_font);
                 tableDescription.AddCell(cellDescription);
-                cellDescription.Phrase = new Phrase(":", normal_font);
+                cellDescription.Phrase = new Phrase("  :", normal_font);
                 tableDescription.AddCell(cellDescription);
-                cellDescription.Phrase = new Phrase(viewModel.LCNo, normal_font);
+                cellDescription.Phrase = new Phrase("  " + viewModel.BuyerAgent.Name, normal_font);
                 tableDescription.AddCell(cellDescription);
-                cellDescription.Phrase = new Phrase("Tgl. LC", normal_font);
+                cellDescription.Phrase = new Phrase("    LC No.", normal_font);
                 tableDescription.AddCell(cellDescription);
-                cellDescription.Phrase = new Phrase(":", normal_font);
+                cellDescription.Phrase = new Phrase("  :", normal_font);
                 tableDescription.AddCell(cellDescription);
-                cellDescription.Phrase = new Phrase(viewModel.LCDate.GetValueOrDefault().ToOffset(new TimeSpan(_identityProvider.TimezoneOffset, 0, 0)).ToString("dd MMMM yyyy"), normal_font);
+                cellDescription.Phrase = new Phrase("  "+viewModel.LCNo, normal_font);
                 tableDescription.AddCell(cellDescription);
-                cellDescription.Phrase = new Phrase("ISSUED BY", normal_font);
+                cellDescription.Phrase = new Phrase("    Tgl. LC", normal_font);
                 tableDescription.AddCell(cellDescription);
-                cellDescription.Phrase = new Phrase(":", normal_font);
+                cellDescription.Phrase = new Phrase("  :", normal_font);
                 tableDescription.AddCell(cellDescription);
-                cellDescription.Phrase = new Phrase(viewModel.IssuedBy, normal_font);
+                cellDescription.Phrase = new Phrase("  "+viewModel.LCDate.GetValueOrDefault().ToOffset(new TimeSpan(_identityProvider.TimezoneOffset, 0, 0)).ToString("dd MMMM yyyy"), normal_font);
+                tableDescription.AddCell(cellDescription);
+                cellDescription.Phrase = new Phrase("    ISSUED BY", normal_font);
+                tableDescription.AddCell(cellDescription);
+                cellDescription.Phrase = new Phrase("  :", normal_font);
+                tableDescription.AddCell(cellDescription);
+                cellDescription.Phrase = new Phrase("  "+viewModel.IssuedBy, normal_font);
                 tableDescription.AddCell(cellDescription);
             }
             else
             {
-                cellDescription.Phrase = new Phrase("Payment Term", normal_font);
+                cellDescription.Phrase = new Phrase("    BUYER", normal_font);
                 tableDescription.AddCell(cellDescription);
-                cellDescription.Phrase = new Phrase(":", normal_font);
+                cellDescription.Phrase = new Phrase("  :", normal_font);
                 tableDescription.AddCell(cellDescription);
-                cellDescription.Phrase = new Phrase(viewModel.PaymentTerm, normal_font);
+                cellDescription.Phrase = new Phrase("  " + viewModel.BuyerAgent.Name, normal_font);
+                tableDescription.AddCell(cellDescription);
+                cellDescription.Phrase = new Phrase("    PAYMENT TERM", normal_font);
+                tableDescription.AddCell(cellDescription);
+                cellDescription.Phrase = new Phrase("  :", normal_font);
+                tableDescription.AddCell(cellDescription);
+                cellDescription.Phrase = new Phrase("  "+viewModel.PaymentTerm, normal_font);
                 tableDescription.AddCell(cellDescription);
             }
 
@@ -208,14 +221,14 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 #region Item
 
                 PdfPTable tableItem = new PdfPTable(3);
-                tableItem.SetWidths(new float[] { 2f, 0.2f, 7.8f });
+                tableItem.SetWidths(new float[] { 2.5f, 0.2f, 7.3f });
                 PdfPCell cellItemContent = new PdfPCell() { Border = Rectangle.NO_BORDER };
 
-                cellItemContent.Phrase = new Phrase("DESCRIPTION OF GOODS", normal_font);
+                cellItemContent.Phrase = new Phrase("    DESCRIPTION OF GOODS", normal_font);
                 tableItem.AddCell(cellItemContent);
-                cellItemContent.Phrase = new Phrase(":", normal_font);
+                cellItemContent.Phrase = new Phrase("  :", normal_font);
                 tableItem.AddCell(cellItemContent);
-                cellItemContent.Phrase = new Phrase(item.Description, normal_font);
+                cellItemContent.Phrase = new Phrase("  "+item.Description, normal_font);
                 tableItem.AddCell(cellItemContent);
 
                 new PdfPCell(tableItem);
@@ -232,17 +245,18 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                         sizes[size.Size.SizeIdx] = size.Size.Size;
                     }
                 }
-                PdfPTable tableDetail = new PdfPTable(SIZES_COUNT + (viewModel.InvoiceType == "AG" ? 11 : 8));
+                //PdfPTable tableDetail = new PdfPTable(SIZES_COUNT + (viewModel.InvoiceType == "AG" ? 11 : 8));
+                PdfPTable tableDetail = new PdfPTable(SIZES_COUNT + 8);
                 var width = new List<float> { 2f, 3.5f, 4f, 4f };
                 for (int i = 0; i < SIZES_COUNT; i++) width.Add(1f);
-                if (viewModel.InvoiceType == "AG")
-                {
-                    width.AddRange(new List<float> { 1.5f, 1f, 1.5f, 2f, 1.5f, 1.5f, 1.5f });
-                }
-                else
-                {
+                //if (viewModel.InvoiceType == "AG")
+                //{
+                //    width.AddRange(new List<float> { 1.5f, 1f, 1.5f, 2f, 1.5f, 1.5f, 1.5f });
+                //}
+                //else
+                //{
                     width.AddRange(new List<float> { 1.5f, 1f, 1.5f, 2f});
-                }
+                //}
                 tableDetail.SetWidths(width.ToArray());
 
                 PdfPCell cellDetailLine = new PdfPCell() { Border = Rectangle.BOTTOM_BORDER, Colspan = 19, Padding = 0.5f, Phrase = new Phrase("") };
@@ -272,17 +286,17 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 tableDetail.AddCell(cellBorderBottomRight);
                 cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk("UNIT", normal_font, 0.75f));
                 tableDetail.AddCell(cellBorderBottomRight);
-                if (viewModel.InvoiceType == "AG")
-                {
-                    cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk("GW/\nCTN", normal_font, 0.75f));
-                    cellBorderBottomRight.Rowspan = 2;
-                    tableDetail.AddCell(cellBorderBottomRight);
-                    cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk("NW/\nCTN", normal_font, 0.75f));
-                    tableDetail.AddCell(cellBorderBottomRight);
-                    cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk("NNW/\nCTN", normal_font, 0.75f));
-                    tableDetail.AddCell(cellBorderBottomRight);
-                    cellBorderBottomRight.Rowspan = 1;
-                }
+                //if (viewModel.InvoiceType == "AG")
+                //{
+                //    cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk("GW/\nCTN", normal_font, 0.75f));
+                //    cellBorderBottomRight.Rowspan = 2;
+                //    tableDetail.AddCell(cellBorderBottomRight);
+                //    cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk("NW/\nCTN", normal_font, 0.75f));
+                //    tableDetail.AddCell(cellBorderBottomRight);
+                //    cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk("NNW/\nCTN", normal_font, 0.75f));
+                //    tableDetail.AddCell(cellBorderBottomRight);
+                //    cellBorderBottomRight.Rowspan = 1;
+                //}
 
                 for (int i = 0; i < SIZES_COUNT; i++)
                 {
@@ -358,15 +372,15 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                     tableDetail.AddCell(cellBorderBottomRight);
                     cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk(uom, normal_font, 0.6f));
                     tableDetail.AddCell(cellBorderBottomRight);
-                    if (viewModel.InvoiceType == "AG")
-                    {
-                        cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk(string.Format("{0:n2}", detail.GrossWeight), normal_font, 0.6f));
-                        tableDetail.AddCell(cellBorderBottomRight);
-                        cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk(string.Format("{0:n2}", detail.NetWeight), normal_font, 0.6f));
-                        tableDetail.AddCell(cellBorderBottomRight);
-                        cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk(string.Format("{0:n2}", detail.NetNetWeight), normal_font, 0.6f));
-                        tableDetail.AddCell(cellBorderBottomRight);
-                    }
+                    //if (viewModel.InvoiceType == "AG")
+                    //{
+                    //    cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk(string.Format("{0:n2}", detail.GrossWeight), normal_font, 0.6f));
+                    //    tableDetail.AddCell(cellBorderBottomRight);
+                    //    cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk(string.Format("{0:n2}", detail.NetWeight), normal_font, 0.6f));
+                    //    tableDetail.AddCell(cellBorderBottomRight);
+                    //    cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk(string.Format("{0:n2}", detail.NetNetWeight), normal_font, 0.6f));
+                    //    tableDetail.AddCell(cellBorderBottomRight);
+                    //}
                 }
 
                 cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk("", normal_font, 0.6f));
@@ -399,15 +413,15 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 tableDetail.AddCell(cellBorderBottomRight);
                 cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk("", normal_font, 0.6f));
                 tableDetail.AddCell(cellBorderBottomRight);
-                if (viewModel.InvoiceType == "AG")
-                {
-                    cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk("", normal_font, 0.6f));
-                    tableDetail.AddCell(cellBorderBottomRight);
-                    cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk("", normal_font, 0.6f));
-                    tableDetail.AddCell(cellBorderBottomRight);
-                    cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk("", normal_font, 0.6f));
-                    tableDetail.AddCell(cellBorderBottomRight);
-                }
+                //if (viewModel.InvoiceType == "AG")
+                //{
+                //    cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk("", normal_font, 0.6f));
+                //    tableDetail.AddCell(cellBorderBottomRight);
+                //    cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk("", normal_font, 0.6f));
+                //    tableDetail.AddCell(cellBorderBottomRight);
+                //    cellBorderBottomRight.Phrase = new Phrase(GetScalledChunk("", normal_font, 0.6f));
+                //    tableDetail.AddCell(cellBorderBottomRight);
+                //}
 
                 totalCtns += subCtns;
                 grandTotal += subTotal;
@@ -420,13 +434,22 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                     arrayGrandTotal[uom] += subTotal;
                 }
 
+                //tableDetail.AddCell(new PdfPCell()
+                //{
+                //    Border = Rectangle.BOTTOM_BORDER,
+                //    Colspan = SIZES_COUNT + (viewModel.InvoiceType == "AG" ? 6 : 3),
+                //    Padding = 5,
+                //    Phrase = new Phrase("SUB TOTAL .............................................................................................................................................. ", normal_font)
+                //});
+
                 tableDetail.AddCell(new PdfPCell()
                 {
                     Border = Rectangle.BOTTOM_BORDER,
-                    Colspan = SIZES_COUNT + (viewModel.InvoiceType == "AG" ? 6 : 3),
+                    Colspan = SIZES_COUNT + 3,
                     Padding = 5,
                     Phrase = new Phrase("SUB TOTAL .............................................................................................................................................. ", normal_font)
                 });
+
                 var subTotalResult = string.Join(" / ", arraySubTotal.Select(x => x.Value + " " + x.Key).ToArray());
                 cellBorderBottom.Phrase = new Phrase(subTotalResult, normal_font);
                 cellBorderBottom.Colspan = 2;
@@ -436,11 +459,18 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 tableDetail.AddCell(cellBorderBottom);
                 cellBorderBottom.Colspan = 1;
 
+                //tableDetail.AddCell(new PdfPCell()
+                //{
+                //    Border = Rectangle.BOTTOM_BORDER,
+                //    Colspan = SIZES_COUNT + (viewModel.InvoiceType == "AG" ? 11 : 8),
+                //    Phrase = new Phrase($"      - Sub Ctns = {subCtns}           - Sub G.W. = {String.Format("{0:0.00}", item.Details.Select(d => new { d.Index, d.Carton1, d.Carton2, TotalGrossWeight = d.CartonQuantity * d.GrossWeight }).GroupBy(g => new { g.Index, g.Carton1, g.Carton2 }, (key, value) => value.First().TotalGrossWeight).Sum())} Kgs           - Sub N.W. = {String.Format("{0:0.00}", item.Details.Select(d => new { d.Index, d.Carton1, d.Carton2, TotalNetWeight = d.CartonQuantity * d.NetWeight }).GroupBy(g => new { g.Index, g.Carton1, g.Carton2 }, (key, value) => value.First().TotalNetWeight).Sum())} Kgs            - Sub N.N.W. = {String.Format("{0:0.00}", item.Details.Select(d => new { d.Index, d.Carton1, d.Carton2, TotalNetNetWeight = d.CartonQuantity * d.NetNetWeight }).GroupBy(g => new { g.Index, g.Carton1, g.Carton2 }, (key, value) => value.First().TotalNetNetWeight).Sum())} Kgs", normal_font)
+                //});
+
                 tableDetail.AddCell(new PdfPCell()
                 {
                     Border = Rectangle.BOTTOM_BORDER,
-                    Colspan = SIZES_COUNT + (viewModel.InvoiceType == "AG" ? 11 : 8),
-                    Phrase = new Phrase($"      - Sub Ctns = {subCtns}           - Sub G.W. = {String.Format("{0:0.00}", item.Details.Select(d => new { d.Index, d.Carton1, d.Carton2, TotalGrossWeight = d.CartonQuantity * d.GrossWeight }).GroupBy(g => new { g.Index, g.Carton1, g.Carton2 }, (key, value) => value.First().TotalGrossWeight).Sum())} Kgs           - Sub N.W. = {String.Format("{0:0.00}", item.Details.Select(d => new { d.Index, d.Carton1, d.Carton2, TotalNetWeight = d.CartonQuantity * d.NetWeight }).GroupBy(g => new { g.Index, g.Carton1, g.Carton2 }, (key, value) => value.First().TotalNetWeight).Sum())} Kgs            - Sub N.N.W. = {String.Format("{0:0.00}", item.Details.Select(d => new { d.Index, d.Carton1, d.Carton2, TotalNetNetWeight = d.CartonQuantity * d.NetNetWeight }).GroupBy(g => new { g.Index, g.Carton1, g.Carton2 }, (key, value) => value.First().TotalNetNetWeight).Sum())} Kgs", normal_font)
+                    Colspan = SIZES_COUNT + 8,
+                    Phrase = new Phrase($"      - Sub Ctns = {subCtns}           ", normal_font)
                 });
 
                 cellBorderBottom.Phrase = new Phrase("", normal_font);
@@ -579,26 +609,26 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             tableMeasurement.SetWidths(new float[] { 2f, 0.2f, 12f });
             PdfPCell cellMeasurement = new PdfPCell() { Border = Rectangle.NO_BORDER };
 
-            cellMeasurement.Phrase = new Phrase("GROSS WEIGHT", normal_font);
-            tableMeasurement.AddCell(cellMeasurement);
-            cellMeasurement.Phrase = new Phrase(":", normal_font);
-            tableMeasurement.AddCell(cellMeasurement);
-            cellMeasurement.Phrase = new Phrase(String.Format("{0:0.00}",viewModel.GrossWeight) + " KGS", normal_font);
-            tableMeasurement.AddCell(cellMeasurement);
+            //cellMeasurement.Phrase = new Phrase("GROSS WEIGHT", normal_font);
+            //tableMeasurement.AddCell(cellMeasurement);
+            //cellMeasurement.Phrase = new Phrase(":", normal_font);
+            //tableMeasurement.AddCell(cellMeasurement);
+            //cellMeasurement.Phrase = new Phrase(String.Format("{0:0.00}",viewModel.GrossWeight) + " KGS", normal_font);
+            //tableMeasurement.AddCell(cellMeasurement);
 
-            cellMeasurement.Phrase = new Phrase("NET WEIGHT", normal_font);
-            tableMeasurement.AddCell(cellMeasurement);
-            cellMeasurement.Phrase = new Phrase(":", normal_font);
-            tableMeasurement.AddCell(cellMeasurement);
-            cellMeasurement.Phrase = new Phrase(String.Format("{0:0.00}",viewModel.NettWeight) + " KGS", normal_font);
-            tableMeasurement.AddCell(cellMeasurement);
+            //cellMeasurement.Phrase = new Phrase("NET WEIGHT", normal_font);
+            //tableMeasurement.AddCell(cellMeasurement);
+            //cellMeasurement.Phrase = new Phrase(":", normal_font);
+            //tableMeasurement.AddCell(cellMeasurement);
+            //cellMeasurement.Phrase = new Phrase(String.Format("{0:0.00}",viewModel.NettWeight) + " KGS", normal_font);
+            //tableMeasurement.AddCell(cellMeasurement);
 
-            cellMeasurement.Phrase = new Phrase("NET NET WEIGHT", normal_font);
-            tableMeasurement.AddCell(cellMeasurement);
-            cellMeasurement.Phrase = new Phrase(":", normal_font);
-            tableMeasurement.AddCell(cellMeasurement);
-            cellMeasurement.Phrase = new Phrase(String.Format("{0:0.00}",viewModel.NetNetWeight)+ " KGS", normal_font);
-            tableMeasurement.AddCell(cellMeasurement);
+            //cellMeasurement.Phrase = new Phrase("NET NET WEIGHT", normal_font);
+            //tableMeasurement.AddCell(cellMeasurement);
+            //cellMeasurement.Phrase = new Phrase(":", normal_font);
+            //tableMeasurement.AddCell(cellMeasurement);
+            //cellMeasurement.Phrase = new Phrase(String.Format("{0:0.00}",viewModel.NetNetWeight)+ " KGS", normal_font);
+            //tableMeasurement.AddCell(cellMeasurement);
 
             cellMeasurement.Phrase = new Phrase("MEASUREMENT", normal_font);
             tableMeasurement.AddCell(cellMeasurement);
@@ -718,14 +748,14 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             tableSign.AddCell(cellBodySignNoBorder);
             cellBodySignNoBorder.Phrase = new Phrase("", normal_font);
             tableSign.AddCell(cellBodySignNoBorder);
-            cellBodySignNoBorder.Phrase = new Phrase("( "+ viewModel.UserAuthorizedName +" )", normal_font);
+            cellBodySignNoBorder.Phrase = new Phrase("( " + viewModel.UserAuthorizedName + " )", normal_font_underlined);
             tableSign.AddCell(cellBodySignNoBorder);
 
             cellBodySignNoBorder.Phrase = new Phrase("", normal_font);
             tableSign.AddCell(cellBodySignNoBorder);
             cellBodySignNoBorder.Phrase = new Phrase("", normal_font);
             tableSign.AddCell(cellBodySignNoBorder);
-            cellBodySignNoBorder.Phrase = new Phrase("AUTHORIZED SIGNATURE", normal_font_underlined);
+            cellBodySignNoBorder.Phrase = new Phrase("AUTHORIZED SIGNATURE", normal_font);
             tableSign.AddCell(cellBodySignNoBorder);
 
             document.Add(tableSign);
@@ -753,12 +783,12 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
         }
     }
 
-    class GarmentPackingListPDFTemplatePageEvent : PdfPageEventHelper
+    class GarmentPackingListWithHeaderSamplePDFTemplatePageEvent : PdfPageEventHelper
     {
         private IIdentityProvider identityProvider;
         private GarmentPackingListViewModel viewModel;
 
-        public GarmentPackingListPDFTemplatePageEvent(IIdentityProvider identityProvider, GarmentPackingListViewModel viewModel)
+        public GarmentPackingListWithHeaderSamplePDFTemplatePageEvent(IIdentityProvider identityProvider, GarmentPackingListViewModel viewModel)
         {
             this.identityProvider = identityProvider;
             this.viewModel = viewModel;
@@ -771,117 +801,299 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
             float height = writer.PageSize.Height, width = writer.PageSize.Width;
             float marginLeft = document.LeftMargin, marginTop = document.TopMargin, marginRight = document.RightMargin, marginBottom = document.BottomMargin;
-
+            Font normal_font = FontFactory.GetFont(BaseFont.HELVETICA, BaseFont.CP1250, BaseFont.NOT_EMBEDDED, 8);
             int maxSizesCount = viewModel.Items.Max(i => i.Details.Max(d => d.Sizes.GroupBy(g => g.Size.Id).Count()));
 
             if (maxSizesCount > 11)
             {
                 cb.SetFontAndSize(BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1250, BaseFont.NOT_EMBEDDED), 6);
 
-                #region LEFT
+                #region old
+                //    #region LEFT
 
-                var logoY = height - marginTop + 65;
+                //    var logoY = height - marginTop + 65;
 
-                byte[] imageByteDL = Convert.FromBase64String(Base64ImageStrings.LOGO_AG_211_200_BW);
-                Image imageDL = Image.GetInstance(imageByteDL);
-                imageDL.ScaleAbsolute(60f, 60f);
-                var newColor = System.Drawing.Color.Red;
-                imageDL.SetAbsolutePosition(marginLeft, logoY);
-                cb.AddImage(imageDL, inlineImage: true);
+                //    byte[] imageByteDL = Convert.FromBase64String(Base64ImageStrings.LOGO_AG_211_200_BW);
+                //    Image imageDL = Image.GetInstance(imageByteDL);
+                //    imageDL.ScaleAbsolute(60f, 60f);
+                //    var newColor = System.Drawing.Color.Red;
+                //    imageDL.SetAbsolutePosition(marginLeft, logoY);
+                //    cb.AddImage(imageDL, inlineImage: true);
 
-                #endregion
+                //    #endregion
 
-                #region CENTER
+                //    #region CENTER
 
-                var headOfficeX = marginLeft + 75;
-                var headOfficeY = height - marginTop + 105;
+                //    var headOfficeX = marginLeft + 75;
+                //    var headOfficeY = height - marginTop + 105;
 
-                byte[] imageByte = Convert.FromBase64String(Base64ImageStrings.LOGO_NAME);
-                Image image = Image.GetInstance(imageByte);
-                if (image.Width > 160)
-                {
-                    float percentage = 0.0f;
-                    percentage = 160 / image.Width;
-                    image.ScalePercent(percentage * 100);
-                }
-                image.SetAbsolutePosition(headOfficeX, headOfficeY);
-                cb.AddImage(image, inlineImage: true);
+                //    byte[] imageByte = Convert.FromBase64String(Base64ImageStrings.LOGO_NAME);
+                //    Image image = Image.GetInstance(imageByte);
+                //    if (image.Width > 160)
+                //    {
+                //        float percentage = 0.0f;
+                //        percentage = 160 / image.Width;
+                //        image.ScalePercent(percentage * 100);
+                //    }
+                //    image.SetAbsolutePosition(headOfficeX, headOfficeY);
+                //    cb.AddImage(image, inlineImage: true);
 
-                string[] headOffices = {
-                    "Head Office : Kelurahan Banaran, Kecamatan Grogol,",
-                    "Sukoharjo - Indonesia",
-                    "PO BOX 166 Solo 57100",
-                    "Telp. 0271-732888",
-                    "Fax. (62 271) 735222, 740777",
-                    "Website : www.ambassadorgarmindo.com",
-                };
-                for (int i = 0; i < headOffices.Length; i++)
-                {
-                    cb.ShowTextAligned(PdfContentByte.ALIGN_LEFT, headOffices[i], headOfficeX, headOfficeY + 10 - image.ScaledHeight - (i * 6), 0);
-                }
+                //    string[] headOffices = {
+                //        "Head Office : Kelurahan Banaran, Kecamatan Grogol,",
+                //        "Sukoharjo - Indonesia",
+                //        "PO BOX 166 Solo 57100",
+                //        "Telp. 0271-732888, 7652913",
+                //        "Website : www.ambassadorgarmindo.com",
+                //    };
+                //    for (int i = 0; i < headOffices.Length; i++)
+                //    {
+                //        cb.ShowTextAligned(PdfContentByte.ALIGN_LEFT, headOffices[i], headOfficeX, headOfficeY + 10 - image.ScaledHeight - (i * 6), 0);
+                //    }
 
-                #endregion
+                //    #endregion
 
-                #region RIGHT
+                //    #region RIGHT
 
-                byte[] imageByteIso = Convert.FromBase64String(Base64ImageStrings.ISO);
-                Image imageIso = Image.GetInstance(imageByteIso);
-                if (imageIso.Width > 80)
-                {
-                    float percentage = 0.0f;
-                    percentage = 80 / imageIso.Width;
-                    imageIso.ScalePercent(percentage * 100);
-                }
-                imageIso.SetAbsolutePosition(width - imageIso.ScaledWidth - marginRight, height - imageIso.ScaledHeight - marginTop + 120);
-                cb.AddImage(imageIso, inlineImage: true);
-                cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, "CERTIFICATE ID09 / 01238", width - (imageIso.ScaledWidth / 2) - marginRight, height - imageIso.ScaledHeight - marginTop + 120 - 5, 0);
+                //    byte[] imageByteIso = Convert.FromBase64String(Base64ImageStrings.ISO);
+                //    Image imageIso = Image.GetInstance(imageByteIso);
+                //    if (imageIso.Width > 80)
+                //    {
+                //        float percentage = 0.0f;
+                //        percentage = 80 / imageIso.Width;
+                //        imageIso.ScalePercent(percentage * 100);
+                //    }
+                //    imageIso.SetAbsolutePosition(width - imageIso.ScaledWidth - marginRight, height - imageIso.ScaledHeight - marginTop + 120);
+                //    cb.AddImage(imageIso, inlineImage: true);
+                //    cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, "CERTIFICATE ID09 / 01238", width - (imageIso.ScaledWidth / 2) - marginRight, height - imageIso.ScaledHeight - marginTop + 120 - 5, 0);
 
-                #endregion
+                //    #endregion
 
-                #region LINE
+                //    #region LINE
 
-                cb.MoveTo(marginLeft, height - marginTop + 50);
-                cb.LineTo(width - marginRight, height - marginTop + 50);
-                cb.Stroke();
+                //    cb.MoveTo(marginLeft, height - marginTop + 50);
+                //    cb.LineTo(width - marginRight, height - marginTop + 50);
+                //    cb.Stroke();
 
-                #endregion
+                //    #endregion
 
-                cb.SetFontAndSize(BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1250, BaseFont.NOT_EMBEDDED), 16);
+                //    cb.SetFontAndSize(BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1250, BaseFont.NOT_EMBEDDED), 16);
 
-                #region TITLE
+                //    #region TITLE
 
-                var titleY = height - marginTop + 40;
-                cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, "PACKING LIST", width / 2, titleY, 0);
+                //    var titleY = height - marginTop + 40;
+                //    cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, "PACKING LIST", width / 2, titleY, 0);
 
+                //    #endregion
                 #endregion
             }
 
-            cb.SetFontAndSize(BaseFont.CreateFont(BaseFont.HELVETICA_BOLD, BaseFont.CP1250, BaseFont.NOT_EMBEDDED), 8);
+            cb.SetFontAndSize(BaseFont.CreateFont(BaseFont.HELVETICA_BOLD, BaseFont.CP1250, BaseFont.NOT_EMBEDDED), 6);
 
-            #region REF
+            //#region REF
 
             //var refY = height - marginTop + 25;
             //cb.ShowTextAligned(PdfContentByte.ALIGN_RIGHT, "Ref. No. : FM-00-SP-24-005", width - marginRight, refY, 0);
 
+            //#endregion
+
+            #region LOGODL
+
+            //byte[] imageByteDL1 = Convert.FromBase64String(Base64ImageStrings.LOGO_AG_58_58);
+            //Image imageDL1 = Image.GetInstance(imageByteDL1);
+            //if (imageDL1.Width > 60)
+            //{
+            //    float percentage = 0.0f;
+            //    percentage = 60 / imageDL1.Width;
+            //    imageDL1.ScalePercent(percentage * 100);
+            //}
+            //imageDL1.SetAbsolutePosition(marginLeft, height - imageDL1.ScaledHeight - marginTop + 60);
+            //cb.AddImage(imageDL1, inlineImage: true);
+
             #endregion
 
-            cb.SetFontAndSize(BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1250, BaseFont.NOT_EMBEDDED), 8);
+            #region ADDRESS
+
+            //var branchOfficeY = height - marginTop + 50;
+
+            //byte[] imageByteAdd = Convert.FromBase64String(Base64ImageStrings.LOGO_NAME);
+            //Image image11 = Image.GetInstance(imageByteAdd);
+            //if (image11.Width > 100)
+            //{
+            //    float percentage = 0.0f;
+            //    percentage = 100 / image11.Width;
+            //    image11.ScalePercent(percentage * 100);
+            //}
+            //image11.SetAbsolutePosition(marginLeft + 80, height - image11.ScaledHeight - marginTop + 75);
+            //cb.AddImage(image11, inlineImage: true);
+
+            //cb.ShowTextAligned(PdfContentByte.ALIGN_LEFT, "Head Office : Jl. Merapi No. 23", marginLeft + 80, branchOfficeY, 0);
+            //string[] branchOffices1 = {
+            //    "Banaran, Grogol, Sukoharjo 57552",
+            //    "Central Java, Indonesia",
+            //    "Tel. : 0271-732888",
+            //    "Fax. : (+62-271) 740777, 735222",
+            //    "PO BOX 166 Solo, 57100",
+            //    "Website : www.ambassadorgarmindo.com",
+            //};
+            //for (int i = 0; i < branchOffices1.Length; i++)
+            //{
+            //    cb.ShowTextAligned(PdfContentByte.ALIGN_LEFT, branchOffices1[i], marginLeft + 80, branchOfficeY - 10 - (i * 10), 0);
+            //}
+
+            #endregion
+
+            #region LOGOISO
+
+            //byte[] imageByteIso1 = Convert.FromBase64String(Base64ImageStrings.ISO);
+            //Image imageIso1 = Image.GetInstance(imageByteIso1);
+            //if (imageIso1.Width > 100)
+            //{
+            //    float percentage = 0.0f;
+            //    percentage = 100 / imageIso1.Width;
+            //    imageIso1.ScalePercent(percentage * 100);
+            //}
+            //imageIso1.SetAbsolutePosition(width - imageIso1.ScaledWidth - marginRight, height - imageIso1.ScaledHeight - marginTop + 60);
+            //cb.AddImage(imageIso1, inlineImage: true);
+            ////cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, "CERTIFICATE ID09 / 01238", width - (imageIso.ScaledWidth / 2) - marginRight, height - imageIso.ScaledHeight - marginTop + 60 - 5, 0);
+
+            #endregion
+
+            /// NEW COP
+
+            #region LEFT
+
+            var branchOfficeY = height - marginTop + 50;
+            cb.ShowTextAligned(PdfContentByte.ALIGN_LEFT, "BRANCH OFFICE :", marginLeft, branchOfficeY, 0);
+            string[] branchOffices = {
+                "Equity Tower 15th Floor Suite C",
+                "Sudirman Central Business District (SCBD) Lot 9",
+                "Jl. Jend. Sudirman Kav 52-53 Jakarta 12190",
+                "Tel. : (62-21) 2903-5388. 2903-5389 (Hunting)",
+                "Fax. : (62-21) 2903-5398",
+            };
+            for (int i = 0; i < branchOffices.Length; i++)
+            {
+                cb.ShowTextAligned(PdfContentByte.ALIGN_LEFT, branchOffices[i], marginLeft, branchOfficeY - 10 - (i * 8), 0);
+            }
+
+            #endregion
+
+            #region CENTER
+
+            var headOfficeX = width / 2 + 30;
+            var headOfficeY = height - marginTop + 45;
+
+            byte[] imageByte = Convert.FromBase64String(Base64ImageStrings.LOGO_NAME);
+            Image image = Image.GetInstance(imageByte);
+            if (image.Width > 160)
+            {
+                float percentage = 0.0f;
+                percentage = 160 / image.Width;
+                image.ScalePercent(percentage * 100);
+            }
+            image.SetAbsolutePosition(headOfficeX - (image.ScaledWidth / 2), headOfficeY);
+            cb.AddImage(image, inlineImage: true);
+
+            string[] headOffices = {
+                "Head Office : JL. MERAPI NO. 23, BANARAN, GROGOL, SUKOHARJO JAWA TENGAH 57552 - INDONESIA",
+                "TELP. 0271-732888",
+                "Website : www.ambassadorgarmindo.com",
+            };
+            for (int i = 0; i < headOffices.Length; i++)
+            {
+                cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, headOffices[i], headOfficeX, headOfficeY - image.ScaledHeight - (i * 10), 0);
+            }
+
+            #endregion
+
+            #region RIGHT
+
+            byte[] imageByteIso = Convert.FromBase64String(Base64ImageStrings.ISO);
+            Image imageIso = Image.GetInstance(imageByteIso);
+            if (imageIso.Width > 80)
+            {
+                float percentage = 0.0f;
+                percentage = 80 / imageIso.Width;
+                imageIso.ScalePercent(percentage * 100);
+            }
+            imageIso.SetAbsolutePosition(width - imageIso.ScaledWidth - marginRight, height - imageIso.ScaledHeight - marginTop + 60);
+            cb.AddImage(imageIso, inlineImage: true);
+
+            cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, "CERTIFICATE ID19 / 05073", width - (imageIso.ScaledWidth / 2) - marginRight, height - imageIso.ScaledHeight - marginTop + 55, 0);
+
+            #endregion
+
+            /// NEW COP
+
+            #region LINE
+
+            cb.MoveTo(marginLeft, height - marginTop - 15);
+            cb.LineTo(width - marginRight, height - marginTop - 15);
+            cb.Stroke();
+
+            cb.MoveTo(marginLeft, height - marginTop - 18);
+            cb.LineTo(width - marginRight, height - marginTop - 18);
+            cb.Stroke();
+
+            #endregion
+
+            #region TITLE
+
+            cb.SetFontAndSize(BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1250, BaseFont.NOT_EMBEDDED), 16);
+            var titleX = height - marginTop - 40;
+            cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, " ", width / 2, titleX, 0);
+            cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, "PACKING LIST", width / 2, titleX, 0);
+            cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, " ", width / 2, titleX, 0);
+
+            #endregion
 
             #region INFO
 
-            var infoY = height - marginTop + 10;
+            cb.SetFontAndSize(BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1250, BaseFont.NOT_EMBEDDED), 8);
+
+            var infoY = height - marginTop - 70;
 
             cb.ShowTextAligned(PdfContentByte.ALIGN_LEFT, "Invoice No. : " + viewModel.InvoiceNo, marginLeft, infoY, 0);
-            cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, "Date : " + viewModel.Date.GetValueOrDefault().ToOffset(new TimeSpan(identityProvider.TimezoneOffset, 0, 0)).ToString("MMM dd, yyyy."), width / 2, infoY, 0);
+            cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, "Date : " + viewModel.Date.GetValueOrDefault().ToOffset(new TimeSpan(identityProvider.TimezoneOffset, 0, 0)).ToString("MMMM dd, yyyy."), width / 2, infoY, 0);
             cb.ShowTextAligned(PdfContentByte.ALIGN_RIGHT, "Page : " + writer.PageNumber, width - marginRight, infoY, 0);
 
             #endregion
 
             #region LINE
 
-            cb.MoveTo(marginLeft, height - marginTop + 5);
-            cb.LineTo(width - marginRight, height - marginTop + 5);
+            cb.MoveTo(marginLeft, height - marginTop - 80);
+            cb.LineTo(width - marginRight, height - marginTop - 80);
             cb.Stroke();
+
+            #endregion
+
+            #region START
+            PdfPTable tableStart = new PdfPTable(1);
+            tableStart.SetWidths(new float[] { 8f });
+
+            PdfPCell cellHeaderContentStart = new PdfPCell() { Border = Rectangle.NO_BORDER };
+            cellHeaderContentStart.AddElement(new Phrase("\n", normal_font));
+            cellHeaderContentStart.AddElement(new Phrase("\n", normal_font));
+            cellHeaderContentStart.AddElement(new Phrase("\n", normal_font));
+            cellHeaderContentStart.AddElement(new Phrase("\n", normal_font));
+            cellHeaderContentStart.AddElement(new Phrase("\n", normal_font));
+            cellHeaderContentStart.AddElement(new Phrase("\n", normal_font));
+            cellHeaderContentStart.AddElement(new Phrase("\n", normal_font));
+
+            tableStart.AddCell(cellHeaderContentStart);
+            tableStart.SpacingAfter = 4f;
+            document.Add(tableStart);
+            #endregion
+
+            #region FOOTER
+
+            var printY1 = document.BottomMargin - 30;
+            var signX1 = document.LeftMargin + 20;
+            var signY1 = printY1 + 20;
+            cb.ShowTextAligned(PdfContentByte.ALIGN_LEFT, "The shippers accept no responsibility for the arrival of goods at destination or for loss or damage in transit after goods were shipped in good order and condition.", document.LeftMargin, 50, 0);
+            cb.ShowTextAligned(PdfContentByte.ALIGN_LEFT, "The  goods  supplied  under  this  invoice  remain  our  property  until  the  invoice  has been credited into  one or our Bank account  mentioned above in full and", document.LeftMargin, 40, 0);
+            cb.ShowTextAligned(PdfContentByte.ALIGN_LEFT, "without restriction.", document.LeftMargin, 30, 0);
+            cb.ShowTextAligned(PdfContentByte.ALIGN_LEFT, "______________________________________________________________________________________________________________________________", document.LeftMargin, 20, 0);
 
             #endregion
 
@@ -889,18 +1101,6 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
             var printY = marginBottom - 40;
             cb.ShowTextAligned(PdfContentByte.ALIGN_RIGHT, "Printed on : " + DateTimeOffset.Now.ToOffset(new TimeSpan(identityProvider.TimezoneOffset, 0, 0)).ToString("dd MMMM yyyy H:mm:ss zzz"), width - marginRight, printY, 0);
-
-            #endregion
-
-            #region SIGNATURE
-
-            //var signX = width - 140;
-            //var signY = marginBottom - 80;
-            //cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, "( MRS. ADRIYANA DAMAYANTI )", signX, signY, 0);
-            //cb.MoveTo(signX - 55, signY - 2);
-            //cb.LineTo(signX + 55, signY - 2);
-            //cb.Stroke();
-            //cb.ShowTextAligned(PdfContentByte.ALIGN_CENTER, "AUTHORIZED SIGNATURE", signX, signY - 10, 0);
 
             #endregion
 
