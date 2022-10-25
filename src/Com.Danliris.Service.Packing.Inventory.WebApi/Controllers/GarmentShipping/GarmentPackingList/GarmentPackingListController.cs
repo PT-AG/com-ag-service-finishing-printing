@@ -184,6 +184,22 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.GarmentShipp
             }
         }
 
+        [HttpGet("{id}/wh/sample-md")]
+        public async Task<IActionResult> GetWHByIdSample([FromRoute] int id)
+        {
+            try
+            {
+                VerifyUser();
+                var result = await _service.ReadWHPdfByIdSample(id);
+
+                return File(result.Data.ToArray(), "application/pdf", result.FileName);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
         [HttpGet("{id}/order-no-wh")]
         public async Task<IActionResult> GetByOrderNoWH([FromRoute] int id)
         {
@@ -358,8 +374,6 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.GarmentShipp
 
         }
 
-		
-
 		[HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
@@ -410,6 +424,7 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.GarmentShipp
             }
 
         }
+
 		[HttpPut("unpostDelivered/{id}")]
 		public async Task<IActionResult> SetUnpostDelivered([FromRoute] int id)
 		{
@@ -426,6 +441,7 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.GarmentShipp
 			}
 
 		}
+
 		[HttpPut("cancel/{id}")]
         public async Task<IActionResult> SetCancel([FromRoute] int id, [FromBody] string reason)
         {
