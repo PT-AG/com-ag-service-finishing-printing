@@ -146,7 +146,6 @@ using Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Garment
 using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.Report;
 using Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.GarmentShipping.GarmentDraftPackingListItem;
 using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.GarmentDraftPackingListItem;
-using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.Report.GarmentFinanceLocalSalesJournal;
 using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.Monitoring.GarmentOmzetMonthlyByBrand;
 using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.Monitoring.GarmentLocalSalesOmzetUnPaid;
 using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.Monitoring.GarmentOmzetAnnualByUnitReport;
@@ -508,15 +507,15 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi
                 app.UseHsts();
             }
 
-            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                var context = serviceScope.ServiceProvider.GetService<PackingInventoryDbContext>();
-                context.Database.SetCommandTimeout(1000);
-                context.Database.Migrate();
+            //using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            //{
+            //    var context = serviceScope.ServiceProvider.GetService<PackingInventoryDbContext>();
+            //    context.Database.SetCommandTimeout(1000);
+            //    context.Database.Migrate();
 
-                //var bus = serviceScope.ServiceProvider.GetService<IAzureServiceBusConsumer<ProductSKUInventoryMovementModel>>();
-                //bus.RegisterOnMessageHandlerAndReceiveMessages();
-            }
+            //    //var bus = serviceScope.ServiceProvider.GetService<IAzureServiceBusConsumer<ProductSKUInventoryMovementModel>>();
+            //    //bus.RegisterOnMessageHandlerAndReceiveMessages();
+            //}
 
             app.UseCors(PACKING_INVENTORY_POLICY);
 

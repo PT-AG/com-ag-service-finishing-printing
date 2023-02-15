@@ -1,11 +1,17 @@
-﻿using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.Report.GarmentFinanceLocalSalesJournal;
-using Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.ShippingLocalSalesNote;
+﻿using Com.Danliris.Service.Packing.Inventory.Application.CommonViewModelObjectProperties;
+using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.Report;
+using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Utilities;
+using Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.GarmentPackingList;
+using Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.GarmentShippingInvoice;
 using Com.Danliris.Service.Packing.Inventory.Infrastructure.IdentityProvider;
-using Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.GarmentShipping.ShippingLocalSalesNote;
+using Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.GarmentShipping.GarmentPackingList;
+using Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.GarmentShipping.GarmentShippingInvoice;
 using Moq;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using Xunit;
 
@@ -13,18 +19,44 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Services.GarmentShipping.R
 {
     public class GarmentFinanceLocalSalesJournalServiceTest
     {
-        public Mock<IServiceProvider> GetServiceProvider(IGarmentShippingLocalSalesNoteRepository repository, IGarmentShippingLocalSalesNoteItemRepository repositoryItem)
+        public Mock<IServiceProvider> GetServiceProvider(IGarmentShippingInvoiceRepository repository, IGarmentPackingListRepository plrepository)
         {
             var spMock = new Mock<IServiceProvider>();
-            spMock.Setup(s => s.GetService(typeof(IGarmentShippingLocalSalesNoteRepository)))
+            var httpClientService = new Mock<IHttpClientService>();
+            HttpResponseMessage messageC = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+            messageC.Content = new StringContent("{\"apiVersion\":\"1.0\",\"statusCode\":200,\"message\":\"Ok\",\"data\":{\"Rate\":14500.0,\"Uid\":\"no\",\"Date\":\"2018-10-20T17:00:00\",\"Code\":\"USD\"},\"info\":{\"count\":1,\"page\":1,\"size\":1,\"total\":1,\"order\":{\"Date\":\"desc\"},\"select\":[\"Rate\"]}}");
+
+            var HttpClientService = new Mock<IHttpClientService>();
+            HttpClientService
+                .Setup(x => x.GetAsync(It.IsAny<string>()))
+                .ReturnsAsync(messageC);
+
+            HttpClientService
+                .Setup(x => x.GetAsync(It.IsRegex($"^master/garment-currencies/sales-debtor-currencies")))
+                .ReturnsAsync(new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                {
+                    Content = new StringContent(JsonConvert.SerializeObject(new
+                    {
+                        apiVersion = "1.0",
+                        statusCode = 200,
+                        message = "Ok",
+                        data = JsonConvert.SerializeObject(new GarmentCurrency { })
+                    }))
+                });
+
+
+            spMock.Setup(s => s.GetService(typeof(IGarmentShippingInvoiceRepository)))
                 .Returns(repository);
 
-            spMock.Setup(s => s.GetService(typeof(IGarmentShippingLocalSalesNoteItemRepository)))
-               .Returns(repositoryItem);
+            spMock.Setup(s => s.GetService(typeof(IGarmentPackingListRepository)))
+               .Returns(plrepository);
 
             spMock.Setup(s => s.GetService(typeof(IIdentityProvider)))
                 .Returns(new IdentityProvider());
 
+            spMock
+                .Setup(x => x.GetService(typeof(IHttpClientService)))
+                .Returns(HttpClientService.Object);
             return spMock;
         }
 
@@ -34,76 +66,31 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Services.GarmentShipping.R
         }
 
         [Fact]
-        public void GetReportData_Success_LJS()
+        public void GetReportData_Success()
         {
-            var item = new GarmentShippingLocalSalesNoteItemModel(1, 1, "", "", 1, 1, "", 1, 1, 1, "") { LocalSalesNoteId = 1 };
-            var items = new List<GarmentShippingLocalSalesNoteItemModel>() { item };
-            var model = new GarmentShippingLocalSalesNoteModel("", 1, "", "", DateTimeOffset.Now, 1, "LJS", "", 1, "", "", "", "", 1, "", "", true, 1, 1, "", false, false, false, null, null, DateTimeOffset.Now, DateTimeOffset.Now, false, false, "", items) { Id = 1 };
-            
+            var model = new GarmentShippingInvoiceModel(1, "", DateTimeOffset.Now, "", "", 1, "A99", "", "", "", "", 1, "", "", DateTimeOffset.Now, "", 1, "", 1, "", 1, "", 1, "", DateTimeOffset.Now,
+                                                        "", DateTimeOffset.Now, "", "", null, 1, 1, "", "", "", false, "", DateTimeOffset.Now, "", DateTimeOffset.Now, "", DateTimeOffset.Now, null, 1, "", "", null, "", "")
+            {
+                Id = 1
+            };
 
-            var repoMock = new Mock<IGarmentShippingLocalSalesNoteRepository>();
+            var model1 = new GarmentPackingListModel("", "LOKAL", "AG", 1, "", DateTimeOffset.Now, "", "", DateTimeOffset.Now, "", 1, "", "", "", "", "", DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, false, false, "", "", "", null, 1, 1, 1, 1, null, "", "", "", "", "", "", "", false, false, 1, "", GarmentPackingListStatusEnum.CREATED, "", false, "", false, false, false, "", "", 1)
+            {
+                Id = 1
+            };
+
+            var repoMock = new Mock<IGarmentShippingInvoiceRepository>();
 
             repoMock.Setup(s => s.ReadAll())
-                .Returns(new List<GarmentShippingLocalSalesNoteModel>() { model }.AsQueryable());
+                .Returns(new List<GarmentShippingInvoiceModel>() { model }.AsQueryable());
 
-            var repoMock1 = new Mock<IGarmentShippingLocalSalesNoteItemRepository>();
-
+            var repoMock1 = new Mock<IGarmentPackingListRepository>();
             repoMock1.Setup(s => s.ReadAll())
-                .Returns(new List<GarmentShippingLocalSalesNoteItemModel>() { item }.AsQueryable());
+                .Returns(new List<GarmentPackingListModel>() { model1 }.AsQueryable());
 
             var service = GetService(GetServiceProvider(repoMock.Object, repoMock1.Object).Object);
 
-            var result = service.GetReportData(model.Date.Month, model.Date.Year, 7);
-
-            Assert.NotEmpty(result.ToList());
-        }
-
-        [Fact]
-        public void GetReportData_Success_LBJ()
-        {
-            var item = new GarmentShippingLocalSalesNoteItemModel(1, 1, "", "", 1, 1, "", 1, 1, 1, "") { LocalSalesNoteId = 1 };
-            var items = new List<GarmentShippingLocalSalesNoteItemModel>() { item };
-            var model = new GarmentShippingLocalSalesNoteModel("", 1, "", "", DateTimeOffset.Now, 1, "LBJ", "", 1, "", "", "", "", 1, "", "", true, 1, 1, "", false, false, false, null, null, DateTimeOffset.Now, DateTimeOffset.Now, false, false, "", items) { Id = 1 };
-
-
-            var repoMock = new Mock<IGarmentShippingLocalSalesNoteRepository>();
-
-            repoMock.Setup(s => s.ReadAll())
-                .Returns(new List<GarmentShippingLocalSalesNoteModel>() { model }.AsQueryable());
-
-            var repoMock1 = new Mock<IGarmentShippingLocalSalesNoteItemRepository>();
-
-            repoMock1.Setup(s => s.ReadAll())
-                .Returns(new List<GarmentShippingLocalSalesNoteItemModel>() { item }.AsQueryable());
-
-            var service = GetService(GetServiceProvider(repoMock.Object, repoMock1.Object).Object);
-
-            var result = service.GetReportData(model.Date.Month, model.Date.Year, 7);
-
-            Assert.NotEmpty(result.ToList());
-        }
-
-        [Fact]
-        public void GetReportData_Success_LBM()
-        {
-            var item = new GarmentShippingLocalSalesNoteItemModel(1, 1, "", "", 1, 1, "", 1, 1, 1, "") { LocalSalesNoteId = 1 };
-            var items = new List<GarmentShippingLocalSalesNoteItemModel>() { item };
-            var model = new GarmentShippingLocalSalesNoteModel("", 1, "", "", DateTimeOffset.Now, 1, "LBM", "", 1, "", "", "", "", 1, "", "", true, 1, 1, "", false, false, false, null, null, DateTimeOffset.Now, DateTimeOffset.Now, false, false, "", items) { Id = 1 };
-
-
-            var repoMock = new Mock<IGarmentShippingLocalSalesNoteRepository>();
-
-            repoMock.Setup(s => s.ReadAll())
-                .Returns(new List<GarmentShippingLocalSalesNoteModel>() { model }.AsQueryable());
-
-            var repoMock1 = new Mock<IGarmentShippingLocalSalesNoteItemRepository>();
-
-            repoMock1.Setup(s => s.ReadAll())
-                .Returns(new List<GarmentShippingLocalSalesNoteItemModel>() { item }.AsQueryable());
-
-            var service = GetService(GetServiceProvider(repoMock.Object, repoMock1.Object).Object);
-
-            var result = service.GetReportData(model.Date.Month, model.Date.Year, 7);
+            var result = service.GetReportData(model1.TruckingDate.Date, model1.TruckingDate.Date, 7);
 
             Assert.NotEmpty(result.ToList());
         }
@@ -111,25 +98,28 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Services.GarmentShipping.R
         [Fact]
         public void GenerateExcel_Success()
         {
-            var item = new GarmentShippingLocalSalesNoteItemModel(1, 1, "", "", 1, 1, "", 1, 1, 1, "") { LocalSalesNoteId = 1 };
-            var items = new List<GarmentShippingLocalSalesNoteItemModel>() { item };
-            var model = new GarmentShippingLocalSalesNoteModel("", 1, "", "", DateTimeOffset.Now, 1, "LJS", "", 1, "", "", "", "", 1, "", "", true, 1, 1, "", false, false, false, null, null, DateTimeOffset.Now, DateTimeOffset.Now, false, false, "", items) { Id = 1 };
+            var model = new GarmentShippingInvoiceModel(1, "", DateTimeOffset.Now, "", "", 1, "A99", "", "", "", "", 1, "", "", DateTimeOffset.Now, "", 1, "", 1, "", 1, "", 1, "", DateTimeOffset.Now,
+                                                        "", DateTimeOffset.Now, "", "", null, 1, 1, "", "", "", false, "", DateTimeOffset.Now, "", DateTimeOffset.Now, "", DateTimeOffset.Now, null, 1, "", "", null, "", "")
+            {
+                Id = 1
+            };
 
-
-            var repoMock = new Mock<IGarmentShippingLocalSalesNoteRepository>();
+            var model1 = new GarmentPackingListModel("", "LOKAL", "AG", 1, "", DateTimeOffset.Now, "", "", DateTimeOffset.Now, "", 1, "", "", "", "", "", DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, false, false, "", "", "", null, 1, 1, 1, 1, null, "", "", "", "", "", "", "", false, false, 1, "", GarmentPackingListStatusEnum.CREATED, "", false, "", false, false, false, "", "", 1)
+            {
+                Id = 1
+            };
+            var repoMock = new Mock<IGarmentShippingInvoiceRepository>();
 
             repoMock.Setup(s => s.ReadAll())
-                .Returns(new List<GarmentShippingLocalSalesNoteModel>() { model }.AsQueryable());
+                .Returns(new List<GarmentShippingInvoiceModel>() { model }.AsQueryable());
 
-            var repoMock1 = new Mock<IGarmentShippingLocalSalesNoteItemRepository>();
-
+            var repoMock1 = new Mock<IGarmentPackingListRepository>();
             repoMock1.Setup(s => s.ReadAll())
-                .Returns(new List<GarmentShippingLocalSalesNoteItemModel>() { item }.AsQueryable());
+                .Returns(new List<GarmentPackingListModel>() { model1 }.AsQueryable());
 
             var service = GetService(GetServiceProvider(repoMock.Object, repoMock1.Object).Object);
 
-
-            var result = service.GenerateExcel(model.Date.Month, model.Date.Year, 7);
+            var result = service.GenerateExcel(model1.TruckingDate.Date, model1.TruckingDate.Date, 7);
 
             Assert.NotNull(result);
         }
@@ -137,22 +127,20 @@ namespace Com.Danliris.Service.Packing.Inventory.Test.Services.GarmentShipping.R
         [Fact]
         public void GenerateExcel_Empty_Success()
         {
-            var repoMock = new Mock<IGarmentShippingLocalSalesNoteRepository>();
+            var repoMock = new Mock<IGarmentShippingInvoiceRepository>();
 
             repoMock.Setup(s => s.ReadAll())
-                .Returns(new List<GarmentShippingLocalSalesNoteModel>().AsQueryable());
+                .Returns(new List<GarmentShippingInvoiceModel>().AsQueryable());
 
-            var repoMock1 = new Mock<IGarmentShippingLocalSalesNoteItemRepository>();
-
+            var repoMock1 = new Mock<IGarmentPackingListRepository>();
             repoMock1.Setup(s => s.ReadAll())
-                .Returns(new List<GarmentShippingLocalSalesNoteItemModel>().AsQueryable());
+                .Returns(new List<GarmentPackingListModel>().AsQueryable());
 
             var service = GetService(GetServiceProvider(repoMock.Object, repoMock1.Object).Object);
 
-            var result = service.GenerateExcel(1, 1, 7);
+            var result = service.GenerateExcel(DateTime.MinValue.Date, DateTime.MinValue.Date, 7);
 
             Assert.NotNull(result);
         }
     }
 }
-

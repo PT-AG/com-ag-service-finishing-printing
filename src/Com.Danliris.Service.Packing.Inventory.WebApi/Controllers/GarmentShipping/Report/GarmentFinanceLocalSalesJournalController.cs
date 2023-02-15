@@ -1,4 +1,4 @@
-﻿using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.Report.GarmentFinanceLocalSalesJournal;
+﻿using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.Report;
 using Com.Danliris.Service.Packing.Inventory.Infrastructure.IdentityProvider;
 using Com.DanLiris.Service.Purchasing.WebApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
@@ -27,13 +27,13 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.GarmentShipp
         }
 
         [HttpGet]
-        public IActionResult GetReport([FromQuery] int month, [FromQuery] int year)
+        public IActionResult GetReport([FromQuery] DateTime? dateFrom, [FromQuery] DateTime? dateTo)
         {
             int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
             string accept = Request.Headers["Accept"];
             try
             {
-                var data = _service.GetReportData(month, year, offset);
+                var data = _service.GetReportData(dateFrom, dateTo, offset);
 
                 return Ok(new
                 {
@@ -50,14 +50,14 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.GarmentShipp
         }
 
         [HttpGet("download")]
-        public IActionResult GetXls([FromQuery] int month, [FromQuery] int year)
+        public IActionResult GetXls([FromQuery] DateTime? dateFrom, [FromQuery] DateTime? dateTo)
         {
             try
             {
                 byte[] xlsInBytes;
                 int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
 
-                var xls = _service.GenerateExcel(month, year, offset);
+                var xls = _service.GenerateExcel(dateFrom, dateTo, offset);
 
                 string filename = String.Format("Jurnal Penjualan Lokal - {0}.xlsx", DateTime.UtcNow.ToString("ddMMyyyy"));
 

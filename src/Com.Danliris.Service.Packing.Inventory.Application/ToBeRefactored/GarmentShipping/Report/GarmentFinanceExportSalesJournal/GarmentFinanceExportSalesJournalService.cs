@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Com.Danliris.Service.Packing.Inventory.Application.CommonViewModelObjectProperties;
 using Newtonsoft.Json;
 using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Utilities;
+using OfficeOpenXml;
 
 namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.Report
 {
@@ -41,7 +42,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             var httpClient = (IHttpClientService)_serviceProvider.GetService(typeof(IHttpClientService));
 
             var currencyUri = ApplicationSetting.CoreEndpoint + $"master/garment-detail-currencies/sales-debtor-currencies-peb?stringDate={stringDate}";
-            var currencyResponse = httpClient.GetAsync(currencyUri).Result.Content.ReadAsStringAsync(); 
+            var currencyResponse = httpClient.GetAsync(currencyUri).Result.Content.ReadAsStringAsync();
 
             var currencyResult = new BaseResponse<GarmentCurrency>()
             {
@@ -53,29 +54,32 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
             return data;
         }
-        public List<GarmentFinanceExportSalesJournalViewModel> GetReportQuery(int month, int year, int offset)
+        public List<GarmentFinanceExportSalesJournalViewModel> GetReportQuery(DateTime? dateFrom, DateTime? dateTo, int offset)
         {
 
-            DateTime dateFrom = new DateTime(year, month, 1);
-            int nextYear = month == 12 ? year + 1 : year;
-            int nextMonth = month == 12 ? 1 : month + 1;
-            DateTime dateTo = new DateTime(nextYear, nextMonth, 1);
+            //DateTime dateFrom = new DateTime(year, month, 1);
+            //int nextYear = month == 12 ? year + 1 : year;
+            //int nextMonth = month == 12 ? 1 : month + 1;
+            //DateTime dateTo = new DateTime(nextYear, nextMonth, 1);
+
+            DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
+            DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
+
             List<GarmentFinanceExportSalesJournalViewModel> data = new List<GarmentFinanceExportSalesJournalViewModel>();
-            
+
             var queryInv = repository.ReadAll();
-            
             var queryPL = plrepository.ReadAll()
-                .Where(w => w.TruckingDate.AddHours(offset).Date >= dateFrom && w.TruckingDate.AddHours(offset).Date < dateTo.Date
-                    && (w.InvoiceType == "DL" || w.InvoiceType == "DS" || w.InvoiceType == "DLR" || w.InvoiceType == "SMR"));
+                .Where(w => w.TruckingDate.AddHours(offset).Date >= DateFrom && w.TruckingDate.AddHours(offset).Date <= DateTo.Date
+                    && w.InvoiceType != "LOKAL" && (w.InvoiceType == "AG" || w.InvoiceType == "DS" || w.InvoiceType == "AGR" || w.InvoiceType == "SMR"));
 
             var joinQuery = from a in queryInv
                             join b in queryPL on a.PackingListId equals b.Id
                             where a.IsDeleted == false && b.IsDeleted == false
                             select new dataQuery
                             {
-                                InvoiceType= b.InvoiceType,
-                                TotalAmount=a.TotalAmount,
-                                PEBDate=a.PEBDate
+                                InvoiceType = b.InvoiceType,
+                                TotalAmount = a.TotalAmount,
+                                PEBDate = a.PEBDate
                             };
 
             List<dataQuery> dataQuery = new List<dataQuery>();
@@ -91,18 +95,18 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             var join = from a in dataQuery
                        select new GarmentFinanceExportSalesJournalViewModel
                        {
-                           remark= a.InvoiceType== "DL" || a.InvoiceType == "DS" ? "       PNJ. BR. JADI EXPORT LANGSUNG" : "       PNJ. LAIN-LAIN EXPORT LANGSUNG",
-                           credit= a.TotalAmount * a.Rate,
-                           debit= 0,
-                           account= a.InvoiceType == "DL" || a.InvoiceType == "DS" ? "5024.00.4.00" : "5026.00.4.00"
+                           remark = a.InvoiceType == "AG" || a.InvoiceType == "DS" ? "       PENJUALAN EXPORT (AG2)" : "       PENJUALAN LAIN-LAIN EXPORT (AG2)",
+                           credit = a.TotalAmount * a.Rate,
+                           debit = 0,
+                           account = a.InvoiceType == "AG" || a.InvoiceType == "DS" ? "420.00.2.000" : "421.00.2.000"
                        };
 
             var debit = new GarmentFinanceExportSalesJournalViewModel
             {
-                remark = "PIUTANG USAHA EXPORT",
+                remark = "PIUTANG USAHA EKSPOR (AG2)",
                 credit = 0,
                 debit = join.Sum(a => a.credit),
-                account = "1103.00.5.00"
+                account = "112.00.3.000"
             };
             data.Add(debit);
 
@@ -112,8 +116,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                        Remark = key.remark,
                        Account = key.account,
                        Credit = group.Sum(s => s.credit)
-                   }).OrderBy(a=>a.Remark);
-            foreach(var item in sumquery)
+                   }).OrderBy(a => a.Remark);
+            foreach (var item in sumquery)
             {
                 var obj = new GarmentFinanceExportSalesJournalViewModel
                 {
@@ -126,7 +130,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 data.Add(obj);
             }
 
-            var total= new GarmentFinanceExportSalesJournalViewModel
+            var total = new GarmentFinanceExportSalesJournalViewModel
             {
                 remark = "",
                 credit = join.Sum(a => a.credit),
@@ -137,16 +141,18 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             return data;
         }
 
-        public List<GarmentFinanceExportSalesJournalViewModel> GetReportData(int month, int year, int offset)
+        public List<GarmentFinanceExportSalesJournalViewModel> GetReportData(DateTime? dateFrom, DateTime? dateTo, int offset)
         {
-            var Query =  GetReportQuery(month, year, offset);
+            var Query = GetReportQuery(dateFrom, dateTo, offset);
             return Query.ToList();
         }
 
-
-        public MemoryStream GenerateExcel(int month, int year, int offset)
+        public MemoryStream GenerateExcel(DateTime? dateFrom, DateTime? dateTo, int offset)
         {
-            var Query = GetReportQuery(month, year, offset);
+            DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
+            DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
+
+            var Query = GetReportQuery(dateFrom, dateTo, offset);
             DataTable result = new DataTable();
 
             result.Columns.Add(new DataColumn() { ColumnName = "AKUN DAN KETERANGAN", DataType = typeof(string) });
@@ -154,22 +160,141 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             result.Columns.Add(new DataColumn() { ColumnName = "DEBET", DataType = typeof(string) });
             result.Columns.Add(new DataColumn() { ColumnName = "KREDIT", DataType = typeof(string) });
 
+            ExcelPackage package = new ExcelPackage();
+
             if (Query.ToArray().Count() == 0)
-                result.Rows.Add("", "", "", "");
+            {
+                result.Rows.Add("", "", 0, 0);
+                bool styling = true;
+
+                foreach (KeyValuePair<DataTable, String> item in new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Territory") })
+                {
+                    var sheet = package.Workbook.Worksheets.Add(item.Value);
+
+                    sheet.Column(1).Width = 50;
+                    sheet.Column(2).Width = 15;
+                    sheet.Column(3).Width = 20;
+                    sheet.Column(4).Width = 20;
+
+                    #region KopTable
+                    sheet.Cells[$"A1:D1"].Value = "PT AMBASSADOR GARMINDO";
+                    sheet.Cells[$"A1:D1"].Merge = true;
+                    sheet.Cells[$"A1:D1"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                    sheet.Cells[$"A1:D1"].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+                    sheet.Cells[$"A1:D1"].Style.Font.Bold = true;
+
+                    sheet.Cells[$"A2:D2"].Value = "ACCOUNTING DEPT.";
+                    sheet.Cells[$"A2:D2"].Merge = true;
+                    sheet.Cells[$"A2:D2"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                    sheet.Cells[$"A2:D2"].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+                    sheet.Cells[$"A2:D2"].Style.Font.Bold = true;
+
+                    sheet.Cells[$"A4:D4"].Value = "IKHTISAR JURNAL";
+                    sheet.Cells[$"A4:D4"].Merge = true;
+                    sheet.Cells[$"A4:D4"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                    sheet.Cells[$"A4:D4"].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+                    sheet.Cells[$"A4:D4"].Style.Font.Bold = true;
+
+                    sheet.Cells[$"C5"].Value = "BUKU HARIAN";
+                    sheet.Cells[$"C5"].Style.Font.Bold = true;
+                    sheet.Cells[$"D5"].Value = ": PENJUALAN EXPORT";
+                    sheet.Cells[$"D5"].Style.Font.Bold = true;
+
+                    sheet.Cells[$"C6"].Value = "PERIODE";
+                    sheet.Cells[$"C6"].Style.Font.Bold = true;
+                    sheet.Cells[$"D6"].Value = ": " + DateFrom.ToString("dd-MM-yyyy") + " S/D " + DateTo.ToString("dd-MM-yyyy");
+                    sheet.Cells[$"D6"].Style.Font.Bold = true;
+
+                    #endregion
+                    sheet.Cells["A8"].LoadFromDataTable(item.Key, true, (styling == true) ? OfficeOpenXml.Table.TableStyles.Light16 : OfficeOpenXml.Table.TableStyles.None);
+
+                    //sheet.Cells[sheet.Dimension.Address].AutoFitColumns();
+                }
+            }
             else
             {
+                int index = 0;
                 foreach (var d in Query)
                 {
+                    index++;
 
-                    string Credit = d.credit > 0 ? string.Format("{0:N2}", d.credit) : "";
-                    string Debit = d.debit > 0 ? string.Format("{0:N2}", d.debit) : "";
+                    result.Rows.Add(d.remark, d.account, d.debit, d.credit);
+                }
 
-                    result.Rows.Add(d.remark, d.account, Debit, Credit);
+                bool styling = true;
+
+                foreach (KeyValuePair<DataTable, String> item in new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Territory") })
+                {
+                    var sheet = package.Workbook.Worksheets.Add(item.Value);
+
+                    #region KopTable
+                    sheet.Cells[$"A1:D1"].Value = "PT AMBASSADOR GARMINDO";
+                    sheet.Cells[$"A1:D1"].Merge = true;
+                    sheet.Cells[$"A1:D1"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                    sheet.Cells[$"A1:D1"].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+                    sheet.Cells[$"A1:D1"].Style.Font.Bold = true;
+
+                    sheet.Cells[$"A2:D2"].Value = "ACCOUNTING DEPT.";
+                    sheet.Cells[$"A2:D2"].Merge = true;
+                    sheet.Cells[$"A2:D2"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                    sheet.Cells[$"A2:D2"].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+                    sheet.Cells[$"A2:D2"].Style.Font.Bold = true;
+
+                    sheet.Cells[$"A4:D4"].Value = "IKHTISAR JURNAL";
+                    sheet.Cells[$"A4:D4"].Merge = true;
+                    sheet.Cells[$"A4:D4"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                    sheet.Cells[$"A4:D4"].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+                    sheet.Cells[$"A4:D4"].Style.Font.Bold = true;
+
+                    sheet.Cells[$"C5"].Value = "BUKU HARIAN";
+                    sheet.Cells[$"C5"].Style.Font.Bold = true;
+                    sheet.Cells[$"D5"].Value = ": PENJUALAN EXPORT";
+                    sheet.Cells[$"D5"].Style.Font.Bold = true;
+
+                    sheet.Cells[$"C6"].Value = "PERIODE";
+                    sheet.Cells[$"C6"].Style.Font.Bold = true;
+                    sheet.Cells[$"D6"].Value = ": " + DateFrom.ToString("dd-MM-yyyy") + " S/D " + DateTo.ToString("dd-MM-yyyy");
+                    sheet.Cells[$"D6"].Style.Font.Bold = true;
+
+                    #endregion
+                    sheet.Cells["A8"].LoadFromDataTable(item.Key, true, (styling == true) ? OfficeOpenXml.Table.TableStyles.Light16 : OfficeOpenXml.Table.TableStyles.None);
+
+                    //sheet.Cells[sheet.Dimension.Address].AutoFitColumns();
                 }
             }
 
-            return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Sheet1") }, true);
+            var stream = new MemoryStream();
+            package.SaveAs(stream);
+
+            return stream;
         }
+        //
+
+        //public MemoryStream GenerateExcel(DateTime? dateFrom, DateTime? dateTo, int offset)
+        //{
+        //    var Query = GetReportQuery(dateFrom, dateTo, offset);
+        //    DataTable result = new DataTable();
+
+        //    result.Columns.Add(new DataColumn() { ColumnName = "AKUN DAN KETERANGAN", DataType = typeof(string) });
+        //    result.Columns.Add(new DataColumn() { ColumnName = "AKUN", DataType = typeof(string) });
+        //    result.Columns.Add(new DataColumn() { ColumnName = "DEBET", DataType = typeof(string) });
+        //    result.Columns.Add(new DataColumn() { ColumnName = "KREDIT", DataType = typeof(string) });
+
+        //    if (Query.ToArray().Count() == 0)
+        //        result.Rows.Add("", "", "", "");
+        //    else
+        //    {
+        //        foreach (var d in Query)
+        //        {
+        //            string Credit = d.credit > 0 ? string.Format("{0:N2}", d.credit) : "";
+        //            string Debit = d.debit > 0 ? string.Format("{0:N2}", d.debit) : "";
+
+        //            result.Rows.Add(d.remark, d.account, Debit, Credit);
+        //        }
+        //    }
+
+        //    return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Sheet1") }, true);
+        //}
     }
 
     public class BaseResponse<T>
@@ -191,6 +316,5 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
         public DateTimeOffset PEBDate { get; set; }
         public decimal TotalAmount { get; set; }
         public decimal Rate { get; set; }
-
     }
 }
