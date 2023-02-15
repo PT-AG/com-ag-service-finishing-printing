@@ -27,13 +27,13 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.GarmentShipp
         }
 
         [HttpGet]
-        public IActionResult GetReport([FromQuery] int month, [FromQuery] int year)
+        public IActionResult GetReport([FromQuery] DateTime? dateFrom, [FromQuery] DateTime? dateTo)
         {
             int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
             string accept = Request.Headers["Accept"];
             try
             {
-                var data = _service.GetReportData(month,year, offset);
+                var data = _service.GetReportData(dateFrom, dateTo, offset);
 
                 return Ok(new
                 {
@@ -50,16 +50,16 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.GarmentShipp
         }
 
         [HttpGet("download")]
-        public IActionResult GetXls([FromQuery] int month, [FromQuery] int year)
+        public IActionResult GetXls([FromQuery] DateTime? dateFrom, [FromQuery] DateTime? dateTo)
         {
             try
             {
                 byte[] xlsInBytes;
                 int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
 
-                var xls = _service.GenerateExcel(month, year, offset);
+                var xls = _service.GenerateExcel(dateFrom, dateTo, offset);
 
-                string filename = String.Format("Jurnal Penjualan Export - {0}.xlsx", DateTime.UtcNow.ToString("ddMMyyyy"));
+                string filename = String.Format("Jurnal Penjualan Export - {0}.xlsx", DateTime.UtcNow.ToString("dd-MMyyyy"));
 
                 xlsInBytes = xls.ToArray();
                 var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);

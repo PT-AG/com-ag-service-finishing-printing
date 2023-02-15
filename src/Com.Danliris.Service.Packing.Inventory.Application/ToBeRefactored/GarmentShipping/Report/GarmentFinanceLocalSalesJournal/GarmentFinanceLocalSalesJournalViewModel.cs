@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.Report.GarmentFinanceLocalSalesJournal
+namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.Report
 {
     public class GarmentFinanceLocalSalesJournalViewModel
     {
-        public string type { get; set; }
         public string remark { get; set; }
         public string account { get; set; }
-        public double debit { get; set; }
-        public double credit { get; set; }
-        public bool useVat { get; set; }
+        public decimal debit { get; set; }
+        public decimal credit { get; set; }
     }
 }
