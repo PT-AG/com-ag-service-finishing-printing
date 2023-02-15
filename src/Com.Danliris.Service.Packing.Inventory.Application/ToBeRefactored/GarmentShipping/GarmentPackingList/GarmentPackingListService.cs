@@ -211,6 +211,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 NettWeight = model.NettWeight,
                 NetNetWeight = model.NetNetWeight,
                 TotalCartons = model.TotalCartons,
+                TotalQuantity=model.TotalQuantity,
                 Measurements = (model.Measurements ?? new List<GarmentPackingListMeasurementModel>()).GroupBy(g => new { g.Length, g.Width, g.Height }).Select(m => new GarmentPackingListMeasurementViewModel
                 {
                     Active = m.FirstOrDefault().Active,

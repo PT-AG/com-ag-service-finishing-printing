@@ -137,9 +137,10 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Gar
 			modelToUpdate.SetDeliverTo(model.DeliverTo, _identityProvider.Username, USER_AGENT);
 			modelToUpdate.SetInvoiceDate(model.InvoiceDate, _identityProvider.Username, USER_AGENT);
 			modelToUpdate.SetUserAuthorizedName(model.UserAuthorizedName, _identityProvider.Username, USER_AGENT);
+            modelToUpdate.SetAttn(model.Attn, _identityProvider.Username, USER_AGENT);
+            modelToUpdate.SetPhone(model.Phone, _identityProvider.Username, USER_AGENT);
 
-
-			foreach (var itemToUpdate in modelToUpdate.Items)
+            foreach (var itemToUpdate in modelToUpdate.Items)
 			{
 				var item = model.Items.FirstOrDefault(i => i.Id == itemToUpdate.Id);
 				if (item != null)

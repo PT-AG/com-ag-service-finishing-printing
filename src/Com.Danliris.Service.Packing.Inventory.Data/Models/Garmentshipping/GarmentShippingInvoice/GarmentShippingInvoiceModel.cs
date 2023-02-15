@@ -53,7 +53,9 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.Gar
 		public string UserAuthorizedName { get;  set; }
 		public DateTimeOffset COTPDate { get; set; }
 		public string PackingListType { get; set; }
-		public ICollection<GarmentShippingInvoiceItemModel> Items { get; set; }
+        public string Attn { get; set; }
+        public string Phone { get; set; }
+        public ICollection<GarmentShippingInvoiceItemModel> Items { get; set; }
 		public ICollection<GarmentShippingInvoiceAdjustmentModel> GarmentShippingInvoiceAdjustment { get; private set; }
         public ICollection<GarmentShippingInvoiceUnitModel> GarmentShippingInvoiceUnit { get; private set; }
 
@@ -65,7 +67,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.Gar
 
         }
 
-		public GarmentShippingInvoiceModel(int PackingListId,string InvoiceNo, DateTimeOffset InvoiceDate, string From, string To,int BuyerAgentId, string BuyerAgentCode,string BuyerAgentName, string Consignee, string LCNo, string IssuedBy, int SectionId,string SectionCode, string ShippingPer, DateTimeOffset SailingDate, string ConfirmationOfOrderNo, int ShippingStaffId,string ShippingStaff,int FabricTypeId, string FabricType, int BankAccountId,string BankAccount, int PaymentDue, string PEBNo, DateTimeOffset PEBDate, string NPENo, DateTimeOffset NPEDate, string Description, string Remark, ICollection<GarmentShippingInvoiceItemModel> Items, decimal AmountToBePaid, decimal AmountCA, string CPrice, string Say, string Memo,bool IsUsed,string BL,DateTimeOffset BLDate, string CO, DateTimeOffset CODate, string COTP, DateTimeOffset COTPDate, ICollection<GarmentShippingInvoiceAdjustmentModel> GarmentShippingInvoiceAdjustment,decimal TotalAmount, string consigneeAddress, string deliverTo, ICollection<GarmentShippingInvoiceUnitModel> GarmentShippingInvoiceUnit, string userAuthorizedName, string packingListType )
+		public GarmentShippingInvoiceModel(int PackingListId,string InvoiceNo, DateTimeOffset InvoiceDate, string From, string To,int BuyerAgentId, string BuyerAgentCode,string BuyerAgentName, string Consignee, string LCNo, string IssuedBy, int SectionId,string SectionCode, string ShippingPer, DateTimeOffset SailingDate, string ConfirmationOfOrderNo, int ShippingStaffId,string ShippingStaff,int FabricTypeId, string FabricType, int BankAccountId,string BankAccount, int PaymentDue, string PEBNo, DateTimeOffset PEBDate, string NPENo, DateTimeOffset NPEDate, string Description, string Remark, ICollection<GarmentShippingInvoiceItemModel> Items, decimal AmountToBePaid, decimal AmountCA, string CPrice, string Say, string Memo,bool IsUsed,string BL,DateTimeOffset BLDate, string CO, DateTimeOffset CODate, string COTP, DateTimeOffset COTPDate, ICollection<GarmentShippingInvoiceAdjustmentModel> GarmentShippingInvoiceAdjustment,decimal TotalAmount, string consigneeAddress, string deliverTo, ICollection<GarmentShippingInvoiceUnitModel> GarmentShippingInvoiceUnit, string userAuthorizedName, string packingListType, string attn, string phone )
 		{
 			this.PackingListId = PackingListId;
 			this.InvoiceNo = InvoiceNo;
@@ -117,6 +119,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.Gar
 			this.UserAuthorizedName = userAuthorizedName;
 			this.PackingListType = packingListType;
 
+            this.Attn = attn;
+            this.Phone = phone;
 
 		}
 
@@ -434,5 +438,23 @@ namespace Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.Gar
 				this.FlagForUpdate(username, uSER_AGENT);
 			}
 		}
-	}
+
+        public void SetAttn(string Attn, string username, string uSER_AGENT)
+        {
+            if (this.Attn != Attn)
+            {
+                this.Attn = Attn;
+                this.FlagForUpdate(username, uSER_AGENT);
+            }
+        }
+
+        public void SetPhone(string Phone, string username, string uSER_AGENT)
+        {
+            if (this.Phone != Phone)
+            {
+                this.Phone = Phone;
+                this.FlagForUpdate(username, uSER_AGENT);
+            }
+        }
+    }
 }
