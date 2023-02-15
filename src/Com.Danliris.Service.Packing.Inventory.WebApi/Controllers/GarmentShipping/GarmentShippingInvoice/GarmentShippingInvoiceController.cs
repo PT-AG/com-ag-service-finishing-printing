@@ -192,26 +192,40 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.GarmentShipp
 					Buyer buyer = _service.GetBuyer(model.BuyerAgent.Id);
 					BankAccount bank = _service.GetBank(model.BankAccountId);
 					GarmentPackingListViewModel pl = await _packingListService.ReadById(model.PackingListId);
-					if (type == "fob")
-					{
-						var PdfTemplate = new GarmentShippingInvoicePdfTemplate();
-						MemoryStream stream = PdfTemplate.GeneratePdfTemplate(model, buyer, bank, pl, timeoffsset);
+                    if (model.PackingListType == "LOCAL")
+                    {
+                        var PdfTemplate = new GarmentShippingInvoiceLocalPdfTemplate();
+                        MemoryStream stream = PdfTemplate.GeneratePdfTemplate(model, buyer, bank, pl, timeoffsset);
 
-						return new FileStreamResult(stream, "application/pdf")
-						{
-							FileDownloadName = model.InvoiceNo + "-Invoice" + ".pdf"
-						};
-					}
-					else
-					{
-						var PdfTemplate = new GarmentShippingInvoiceCMTPdfTemplate();
-						MemoryStream stream = PdfTemplate.GeneratePdfTemplate(model, buyer, bank, pl, timeoffsset);
+                        return new FileStreamResult(stream, "application/pdf")
+                        {
+                            FileDownloadName = model.InvoiceNo + "-Invoice" + ".pdf"
+                        };
+                    }
+                    else
+                    {
+                        if (type == "fob")
+                        {
+                            var PdfTemplate = new GarmentShippingInvoicePdfTemplate();
+                            MemoryStream stream = PdfTemplate.GeneratePdfTemplate(model, buyer, bank, pl, timeoffsset);
 
-						return new FileStreamResult(stream, "application/pdf")
-						{
-							FileDownloadName = model.InvoiceNo + "-CMT" + ".pdf"
-						};
-					}
+                            return new FileStreamResult(stream, "application/pdf")
+                            {
+                                FileDownloadName = model.InvoiceNo + "-Invoice" + ".pdf"
+                            };
+                        }
+                        else
+                        {
+                            var PdfTemplate = new GarmentShippingInvoiceCMTPdfTemplate();
+                            MemoryStream stream = PdfTemplate.GeneratePdfTemplate(model, buyer, bank, pl, timeoffsset);
+
+                            return new FileStreamResult(stream, "application/pdf")
+                            {
+                                FileDownloadName = model.InvoiceNo + "-CMT" + ".pdf"
+                            };
+                        }
+                    }
+                    
 
 				}
 			}
