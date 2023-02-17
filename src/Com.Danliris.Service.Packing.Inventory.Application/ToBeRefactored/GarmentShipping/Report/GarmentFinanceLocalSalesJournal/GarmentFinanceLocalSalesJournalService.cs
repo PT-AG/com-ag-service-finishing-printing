@@ -21,6 +21,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
     {
         private readonly IGarmentShippingInvoiceRepository repository;
         private readonly IGarmentPackingListRepository plrepository;
+        private readonly IGarmentShippingInvoiceItemRepository itemrepository;
 
         private readonly IIdentityProvider _identityProvider;
         private readonly IServiceProvider _serviceProvider;
@@ -29,6 +30,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
         {
             repository = serviceProvider.GetService<IGarmentShippingInvoiceRepository>();
             plrepository = serviceProvider.GetService<IGarmentPackingListRepository>();
+            itemrepository = serviceProvider.GetService<IGarmentShippingInvoiceItemRepository>();
             _identityProvider = serviceProvider.GetService<IIdentityProvider>();
             _serviceProvider = serviceProvider;
         }
@@ -68,36 +70,42 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             List<GarmentFinanceLocalSalesJournalViewModel> data = new List<GarmentFinanceLocalSalesJournalViewModel>();
 
             var queryInv = repository.ReadAll();
+            var queryInvItm = itemrepository.ReadAll();
+
             var queryPL = plrepository.ReadAll()
                 .Where(w => w.TruckingDate.AddHours(offset).Date >= DateFrom && w.TruckingDate.AddHours(offset).Date <= DateTo.Date
                     && w.InvoiceType == "LOKAL" && (w.InvoiceType == "AG" || w.InvoiceType == "DS" || w.InvoiceType == "AGR" || w.InvoiceType == "SMR"));
 
             var joinQuery = from a in queryInv
+                            join c in queryInvItm on a.Id equals c.GarmentShippingInvoiceId
                             join b in queryPL on a.PackingListId equals b.Id
                             where a.IsDeleted == false && b.IsDeleted == false
                             select new dataQuery1
                             {
                                 InvoiceType = b.InvoiceType,
                                 TotalAmount = a.TotalAmount,
-                                PEBDate = a.PEBDate
+                                PEBDate = a.PEBDate,
+                                Qty = c.Quantity,
+                                Price = c.Price,
+                                Rate = 1
                             };
 
             List<dataQuery1> dataQuery1 = new List<dataQuery1>();
 
-            foreach (var invoice in joinQuery.ToList())
-            {
-                GarmentCurrency currency = GetCurrencyPEBDate(invoice.PEBDate.Date.ToShortDateString());
-                var rate = currency != null ? Convert.ToDecimal(currency.rate) : 0;
-                invoice.Rate = rate;
-                dataQuery1.Add(invoice);
-            }
+            //foreach (var invoice in joinQuery.ToList())
+            //{
+            //    GarmentCurrency currency = GetCurrencyPEBDate(invoice.PEBDate.Date.ToShortDateString());
+            //    var rate = currency != null ? Convert.ToDecimal(currency.rate) : 0;
+            //    invoice.Rate = rate;
+            //    dataQuery1.Add(invoice);
+            //}
 
             var join = from a in dataQuery1
                        select new GarmentFinanceLocalSalesJournalViewModel
                        {
                            remark = a.InvoiceType == "AG" || a.InvoiceType == "DS" ? "       PENJUALAN LOKAL (AG2)" : "       PENJUALAN LAIN-LAIN LOKAL (AG2)",
-                           credit = a.TotalAmount * a.Rate,
-                           debit = 0,
+                           credit = Convert.ToDecimal(a.Qty) * a.Price * a.Rate,
+                           debit = Convert.ToDecimal(a.Qty) * a.Price * 110 / 100,
                            account = a.InvoiceType == "AG" || a.InvoiceType == "DS" ? "411.00.2.000" : "411.00.2.000"
                        };
 
@@ -105,9 +113,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             {
                 remark = "PIUTANG USAHA LOKAL(AG2)",
                 credit = 0,
-                debit = join.Sum(a => a.credit),
+                debit = join.Sum(a => a.debit),
                 account = "112.00.2.000"
-
             };
             data.Add(debit);
 
@@ -131,11 +138,40 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 data.Add(obj);
             }
 
+            var ppn = new GarmentFinanceLocalSalesJournalViewModel
+            {
+                remark = "     PPN KELUARAN (AG2)",
+                credit = join.Sum(a => a.debit) - join.Sum(a => a.credit),
+                debit = 0,
+                account = "217.01.2.000",
+            };
+
+            data.Add(ppn);
+
+            var debit3 = new GarmentFinanceLocalSalesJournalViewModel
+            {
+                remark = "HARGA POKOK PENJUALAN(AG2)",
+                credit = 0,
+                debit = join.Sum(a => a.credit),
+                account = "500.00.2.000",
+            };
+            data.Add(debit3);
+            //
+            var stock = new GarmentFinanceLocalSalesJournalViewModel
+            {
+                remark = "     PERSEDIAAN BARANG JADI (AG2)",
+                credit = join.Sum(a => a.credit),
+                debit = 0,
+                account = "114.01.2.000",
+            };
+
+            data.Add(stock);
+
             var total = new GarmentFinanceLocalSalesJournalViewModel
             {
                 remark = "",
-                credit = join.Sum(a => a.credit),
-                debit = join.Sum(a => a.credit),
+                credit = join.Sum(a => a.credit) * 2,
+                debit = join.Sum(a => a.credit) * 2,
                 account = ""
             };
             data.Add(total);
@@ -317,5 +353,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
         public DateTimeOffset PEBDate { get; set; }
         public decimal TotalAmount { get; set; }
         public decimal Rate { get; set; }
+        public double Qty { get; set; }
+        public decimal Price { get; set; }
+
     }
 }

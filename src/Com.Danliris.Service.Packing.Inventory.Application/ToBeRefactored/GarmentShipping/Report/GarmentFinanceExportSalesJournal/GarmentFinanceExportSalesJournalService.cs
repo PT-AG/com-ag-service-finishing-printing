@@ -130,11 +130,30 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 data.Add(obj);
             }
 
+            var debit3 = new GarmentFinanceExportSalesJournalViewModel
+            {
+                remark = "HARGA POKOK PENJUALAN(AG2)",
+                credit = 0,
+                debit = join.Sum(a => a.credit),
+                account = "500.00.2.000",
+            };
+            data.Add(debit3);
+            //
+            var stock = new GarmentFinanceExportSalesJournalViewModel
+            {
+                remark = "     PERSEDIAAN BARANG JADI (AG2)",
+                credit = join.Sum(a => a.credit),
+                debit = 0,
+                account = "114.01.2.000",
+            };
+
+            data.Add(stock);
+
             var total = new GarmentFinanceExportSalesJournalViewModel
             {
                 remark = "",
-                credit = join.Sum(a => a.credit),
-                debit = join.Sum(a => a.credit),
+                credit = join.Sum(a => a.credit) * 2,
+                debit = join.Sum(a => a.credit) * 2,
                 account = ""
             };
             data.Add(total);
