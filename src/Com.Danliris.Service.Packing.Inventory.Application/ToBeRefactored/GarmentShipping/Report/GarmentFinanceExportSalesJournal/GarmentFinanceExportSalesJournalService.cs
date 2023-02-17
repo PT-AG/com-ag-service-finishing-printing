@@ -70,7 +70,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             var queryInv = repository.ReadAll();
             var queryPL = plrepository.ReadAll()
                 .Where(w => w.TruckingDate.AddHours(offset).Date >= DateFrom && w.TruckingDate.AddHours(offset).Date <= DateTo.Date
-                    && w.InvoiceType != "LOKAL" && (w.InvoiceType == "AG" || w.InvoiceType == "DS" || w.InvoiceType == "AGR" || w.InvoiceType == "SMR"));
+                    && w.PackingListType != "LOKAL" && (w.InvoiceType == "AG" || w.InvoiceType == "DS" || w.InvoiceType == "AGR" || w.InvoiceType == "SMR"));
 
             var joinQuery = from a in queryInv
                             join b in queryPL on a.PackingListId equals b.Id
