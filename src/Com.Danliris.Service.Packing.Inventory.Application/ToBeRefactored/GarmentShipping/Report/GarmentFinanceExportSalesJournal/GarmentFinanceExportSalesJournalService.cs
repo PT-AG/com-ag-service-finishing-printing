@@ -201,8 +201,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             var total = new GarmentFinanceExportSalesJournalViewModel
             {
                 remark = "",
-                credit = join.Sum(a => a.debit) + Convert.ToDecimal(datax.Sum(a => a.AmountCC)),
-                debit = join.Sum(a => a.debit) + Convert.ToDecimal(datax.Sum(a => a.AmountCC)),
+                credit = join.Sum(a => a.credit) + Convert.ToDecimal(datax.Sum(a => a.AmountCC)),
+                debit = join.Sum(a => a.credit) + Convert.ToDecimal(datax.Sum(a => a.AmountCC)),
                 account = ""
             };
             data.Add(total);
