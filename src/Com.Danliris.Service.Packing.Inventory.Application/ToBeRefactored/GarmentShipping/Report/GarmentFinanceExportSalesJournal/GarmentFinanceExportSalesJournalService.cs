@@ -21,6 +21,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
     {
         private readonly IGarmentShippingInvoiceRepository repository;
         private readonly IGarmentPackingListRepository plrepository;
+        private readonly IGarmentShippingInvoiceItemRepository itemrepository;
 
         private readonly IIdentityProvider _identityProvider;
         private readonly IServiceProvider _serviceProvider;
@@ -29,6 +30,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
         {
             repository = serviceProvider.GetService<IGarmentShippingInvoiceRepository>();
             plrepository = serviceProvider.GetService<IGarmentPackingListRepository>();
+            itemrepository = serviceProvider.GetService<IGarmentShippingInvoiceItemRepository>();
             _identityProvider = serviceProvider.GetService<IIdentityProvider>();
             _serviceProvider = serviceProvider;
         }
@@ -66,33 +68,63 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
 
             List<GarmentFinanceExportSalesJournalViewModel> data = new List<GarmentFinanceExportSalesJournalViewModel>();
+            List<GarmentFinanceExportSalesJournalTempViewModel> data1 = new List<GarmentFinanceExportSalesJournalTempViewModel>();
+            List<GarmentFinanceExportSalesJournalTempViewModel> datax = new List<GarmentFinanceExportSalesJournalTempViewModel>();
 
             var queryInv = repository.ReadAll();
+            var queryInvItm = itemrepository.ReadAll();
+
             var queryPL = plrepository.ReadAll()
                 .Where(w => w.TruckingDate.AddHours(offset).Date >= DateFrom && w.TruckingDate.AddHours(offset).Date <= DateTo.Date
                     && w.PackingListType != "LOKAL" && (w.InvoiceType == "AG" || w.InvoiceType == "DS" || w.InvoiceType == "AGR" || w.InvoiceType == "SMR"));
 
             var joinQuery = from a in queryInv
+                            join c in queryInvItm on a.Id equals c.GarmentShippingInvoiceId
                             join b in queryPL on a.PackingListId equals b.Id
                             where a.IsDeleted == false && b.IsDeleted == false
-                            select new dataQuery
+                            select new GarmentFinanceExportSalesJournalTempViewModel
                             {
                                 InvoiceType = b.InvoiceType,
+                                RO_Number = c.RONo,
                                 TotalAmount = a.TotalAmount,
-                                PEBDate = a.PEBDate
+                                PEBDate = a.PEBDate,
+                                Qty = c.Quantity,
+                                Price = c.Price,
+                                Rate = 0,
+                                AmountCC = 0,
                             };
 
-            List<dataQuery> dataQuery = new List<dataQuery>();
+            //List<dataQuery> dataQuery = new List<dataQuery>();
 
-            foreach (var invoice in joinQuery.ToList())
+            //foreach (var invoice in joinQuery)
+            //{
+            //    GarmentCurrency currency = GetCurrencyPEBDate(invoice.PEBDate.Date.ToShortDateString());
+            //    var rate = currency != null ? Convert.ToDecimal(currency.rate) : 0;
+            //    invoice.Rate = rate;
+            //    joinQuery.Add(invoice);
+            //}
+
+            //
+            foreach (GarmentFinanceExportSalesJournalTempViewModel i in joinQuery)
             {
-                GarmentCurrency currency = GetCurrencyPEBDate(invoice.PEBDate.Date.ToShortDateString());
+                GarmentCurrency currency = GetCurrencyPEBDate(i.PEBDate.Date.ToShortDateString());
                 var rate = currency != null ? Convert.ToDecimal(currency.rate) : 0;
-                invoice.Rate = rate;
-                dataQuery.Add(invoice);
-            }
 
-            var join = from a in dataQuery
+                data1.Add(new GarmentFinanceExportSalesJournalTempViewModel
+                {
+                    InvoiceType = i.InvoiceType,
+                    RO_Number = i.RO_Number,
+                    PEBDate = i.PEBDate,
+                    TotalAmount = i.TotalAmount,
+                    Rate = rate,
+                    Qty = i.Qty,
+                    Price = i.Price,
+                    AmountCC = 0,
+                });
+            };
+            //
+
+            var join = from a in data1
                        select new GarmentFinanceExportSalesJournalViewModel
                        {
                            remark = a.InvoiceType == "AG" || a.InvoiceType == "DS" ? "       PENJUALAN EXPORT (AG2)" : "       PENJUALAN LAIN-LAIN EXPORT (AG2)",
@@ -129,12 +161,29 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
                 data.Add(obj);
             }
+            //
+            foreach (GarmentFinanceExportSalesJournalTempViewModel i in data1)
+            {
+                var data2 = GetCostCalculation(i.RO_Number);
 
+                datax.Add(new GarmentFinanceExportSalesJournalTempViewModel
+                {
+                    InvoiceType = i.InvoiceType,
+                    RO_Number = i.RO_Number,
+                    PEBDate = i.PEBDate,
+                    TotalAmount = i.TotalAmount,
+                    Rate = i.Rate,
+                    Qty = i.Qty,
+                    Price = i.Price,
+                    AmountCC = data2 == null || data2.Count == 0 ? 0 : data2.FirstOrDefault().AmountCC * i.Qty,
+                });
+            };
+            //
             var debit3 = new GarmentFinanceExportSalesJournalViewModel
             {
                 remark = "HARGA POKOK PENJUALAN(AG2)",
                 credit = 0,
-                debit = join.Sum(a => a.credit),
+                debit = Convert.ToDecimal(datax.Sum(a => a.AmountCC)),
                 account = "500.00.2.000",
             };
             data.Add(debit3);
@@ -142,7 +191,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             var stock = new GarmentFinanceExportSalesJournalViewModel
             {
                 remark = "     PERSEDIAAN BARANG JADI (AG2)",
-                credit = join.Sum(a => a.credit),
+                credit = Convert.ToDecimal(datax.Sum(a => a.AmountCC)),
                 debit = 0,
                 account = "114.01.2.000",
             };
@@ -152,12 +201,40 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             var total = new GarmentFinanceExportSalesJournalViewModel
             {
                 remark = "",
-                credit = join.Sum(a => a.credit) * 2,
-                debit = join.Sum(a => a.credit) * 2,
+                credit = join.Sum(a => a.debit) + Convert.ToDecimal(datax.Sum(a => a.AmountCC)),
+                debit = join.Sum(a => a.debit) + Convert.ToDecimal(datax.Sum(a => a.AmountCC)),
                 account = ""
             };
             data.Add(total);
             return data;
+        }
+
+        public List<CostCalculationGarmentForJournal> GetCostCalculation(string RO_Number)
+        {
+            string costcalcUri = "cost-calculation-garments/dataforjournal";
+            IHttpClientService httpClient = (IHttpClientService)_serviceProvider.GetService(typeof(IHttpClientService));
+
+            var response = httpClient.GetAsync($"{ApplicationSetting.SalesEndpoint}{costcalcUri}?RO_Number={RO_Number}").Result;
+            if (response.IsSuccessStatusCode)
+            {
+                var content = response.Content.ReadAsStringAsync().Result;
+                Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(content);
+
+                List<CostCalculationGarmentForJournal> viewModel;
+                if (result.GetValueOrDefault("data") == null)
+                {
+                    viewModel = null;
+                }
+                else
+                {
+                    viewModel = JsonConvert.DeserializeObject<List<CostCalculationGarmentForJournal>>(result.GetValueOrDefault("data").ToString());
+                }
+                return viewModel;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public List<GarmentFinanceExportSalesJournalViewModel> GetReportData(DateTime? dateFrom, DateTime? dateTo, int offset)

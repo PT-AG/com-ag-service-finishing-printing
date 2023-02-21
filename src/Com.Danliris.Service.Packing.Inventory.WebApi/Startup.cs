@@ -169,6 +169,7 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi
         {
             ApplicationSetting.CoreEndpoint = Configuration.GetValue<string>(Constant.CORE_ENDPOINT) ?? Configuration[Constant.CORE_ENDPOINT];
             ApplicationSetting.ProductionEndpoint = Configuration.GetValue<string>(Constant.GARMENT_PRODUCTION_ENDPOINT) ?? Configuration[Constant.GARMENT_PRODUCTION_ENDPOINT];
+            ApplicationSetting.SalesEndpoint = Configuration.GetValue<string>(Constant.GARMENT_SALES_ENDPOINT) ?? Configuration[Constant.GARMENT_SALES_ENDPOINT];         
             ApplicationSetting.StorageAccountName = Configuration.GetValue<string>(Constant.STORAGE_ACCOUNT_NAME) ?? Configuration[Constant.STORAGE_ACCOUNT_NAME];
             ApplicationSetting.StorageAccountKey = Configuration.GetValue<string>(Constant.STORAGE_ACCOUNT_KEY) ?? Configuration[Constant.STORAGE_ACCOUNT_KEY];
         }

@@ -26,11 +26,21 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.GarmentShipp
             _identityProvider = identityProvider;
         }
 
+        protected void VerifyUser()
+        {
+            _identityProvider.Username = User.Claims.ToArray().SingleOrDefault(p => p.Type.Equals("username")).Value;
+            _identityProvider.Token = Request.Headers["Authorization"].FirstOrDefault().Replace("Bearer ", "");
+            _identityProvider.TimezoneOffset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+        }
+
         [HttpGet]
         public IActionResult GetReport([FromQuery] DateTime? dateFrom, [FromQuery] DateTime? dateTo)
         {
             int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
-            string accept = Request.Headers["Accept"];
+            //string accept = Request.Headers["Accept"];
+
+            VerifyUser();
+
             try
             {
                 var data = _service.GetReportData(dateFrom, dateTo, offset);
@@ -52,6 +62,9 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.GarmentShipp
         [HttpGet("download")]
         public IActionResult GetXls([FromQuery] DateTime? dateFrom, [FromQuery] DateTime? dateTo)
         {
+
+            VerifyUser(); 
+            
             try
             {
                 byte[] xlsInBytes;
