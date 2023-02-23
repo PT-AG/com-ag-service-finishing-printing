@@ -119,7 +119,21 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 debit = join.Sum(a => a.debit),
                 account = "112.00.2.000"
             };
-            data.Add(debit);
+            if (debit.debit > 0)
+            {
+                data.Add(debit);
+            }
+            else
+            {
+                var debitx = new GarmentFinanceLocalSalesJournalViewModel
+                {
+                    remark = "PIUTANG USAHA LOKAL(AG2)",
+                    credit = 0,
+                    debit = 0,
+                    account = "112.00.2.000"
+                };
+                data.Add(debitx);
+            }
 
             var sumquery = join.ToList()
                    .GroupBy(x => new { x.remark, x.account }, (key, group) => new
@@ -140,17 +154,51 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
                 data.Add(obj);
             }
+            //
+            if (join.ToList().Count == 0)
+            {
+                var credit1x = new GarmentFinanceLocalSalesJournalViewModel
+                {
+                    remark = "       PENJUALAN LOKAL (AG2)",
+                    credit = 0,
+                    debit = 0,
+                    account = "411.00.2.000"
+                };
+                data.Add(credit1x);
+
+                //var credit2x = new GarmentFinanceLocalSalesJournalViewModel
+                //{
+                //    remark = "       PENJUALAN LAIN-LAIN LOKAL (AG2)",
+                //    credit = 0,
+                //    debit = 0,
+                //    account = "411.00.2.000"
+                //};
+                //data.Add(credit2x);
+            }
 
             var ppn = new GarmentFinanceLocalSalesJournalViewModel
             {
-                remark = "     PPN KELUARAN (AG2)",
+                remark = "       PPN KELUARAN (AG2)",
                 credit = join.Sum(a => a.debit) - join.Sum(a => a.credit),
                 debit = 0,
                 account = "217.01.2.000",
             };
 
-            data.Add(ppn);
-
+            if (ppn.credit > 0)
+            {
+                data.Add(ppn);
+            }
+            else
+            {
+                var ppnx = new GarmentFinanceLocalSalesJournalViewModel
+                {
+                    remark = "       PPN KELUARAN (AG2)",
+                    credit = 0,
+                    debit = 0,
+                    account = "217.01.2.000",
+                };
+                data.Add(ppnx);
+            }
             //
             foreach (GarmentFinanceLocalSalesJournalTempViewModel i in joinQuery)
             {
@@ -177,17 +225,44 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 debit = Convert.ToDecimal(data1.Sum(a => a.AmountCC)),
                 account = "500.00.2.000",
             };
-            data.Add(debit3);
+            if (debit3.debit > 0)
+            {
+                data.Add(debit3);
+            }
+            else
+            {
+                var debit3x = new GarmentFinanceLocalSalesJournalViewModel
+                {
+                    remark = "HARGA POKOK PENJUALAN(AG2)",
+                    credit = 0,
+                    debit = 0,
+                    account = "500.00.2.000",
+                };
+                data.Add(debit3x);
+            }
             //
             var stock = new GarmentFinanceLocalSalesJournalViewModel
             {
-                remark = "     PERSEDIAAN BARANG JADI (AG2)",
+                remark = "       PERSEDIAAN BARANG JADI (AG2)",
                 credit = Convert.ToDecimal(data1.Sum(a => a.AmountCC)),
                 debit = 0,
                 account = "114.01.2.000",
             };
-
-            data.Add(stock);
+            if (stock.credit > 0)
+            {
+                data.Add(stock);
+            }
+            else
+            {
+                var stockx = new GarmentFinanceLocalSalesJournalViewModel
+                {
+                    remark = "       PERSEDIAAN BARANG JADI (AG2)",
+                    credit = 0,
+                    debit = 0,
+                    account = "114.01.2.000",
+                };
+                data.Add(stockx);
+            }
 
             var total = new GarmentFinanceLocalSalesJournalViewModel
             {
@@ -196,10 +271,24 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 debit = join.Sum(a => a.debit) + Convert.ToDecimal(data1.Sum(a => a.AmountCC)),
                 account = ""
             };
-            data.Add(total);
+            if (total.credit > 0)
+            {
+                data.Add(total);
+            }
+            else
+            {
+                var totalx = new GarmentFinanceLocalSalesJournalViewModel
+                {
+                    remark = "",
+                    credit = 0,
+                    debit = 0,
+                    account = ""
+                };
+                data.Add(totalx);
+            }
             return data;
-        }        
-     
+        }
+
         public List<CostCalculationGarmentForJournal> GetCostCalculation(string RO_Number)
         {
             string costcalcUri = "cost-calculation-garments/dataforjournal";
