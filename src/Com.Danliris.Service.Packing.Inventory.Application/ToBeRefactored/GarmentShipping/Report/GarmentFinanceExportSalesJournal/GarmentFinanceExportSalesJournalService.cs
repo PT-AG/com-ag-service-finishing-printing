@@ -135,12 +135,26 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
             var debit = new GarmentFinanceExportSalesJournalViewModel
             {
-                remark = "PIUTANG USAHA EKSPOR (AG2)",
+                remark = "PIUTANG USAHA EXPORT (AG2)",
                 credit = 0,
                 debit = join.Sum(a => a.credit),
                 account = "112.00.3.000"
             };
-            data.Add(debit);
+            if (debit.debit > 0)
+            {
+                data.Add(debit);
+            }
+            else
+            {
+                var debitx = new GarmentFinanceExportSalesJournalViewModel
+                {
+                    remark = "PIUTANG USAHA EXPORT (AG2)",
+                    credit = 0,
+                    debit = 0,
+                    account = "112.00.3.000"
+                };
+                data.Add(debitx);
+            }
 
             var sumquery = join.ToList()
                    .GroupBy(x => new { x.remark, x.account }, (key, group) => new
@@ -161,6 +175,28 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
                 data.Add(obj);
             }
+            //
+            if (join.ToList().Count == 0)
+            {
+                var credit1x = new GarmentFinanceExportSalesJournalViewModel
+                {
+                    remark = "       PENJUALAN EXPORT (AG2)",
+                    credit = 0,
+                    debit = 0,
+                    account = "420.00.2.000"
+                };
+                data.Add(credit1x);
+
+                //var credit2x = new GarmentFinanceExportSalesJournalViewModel
+                //{
+                //    remark = "       PENJUALAN LAIN-LAIN EXPORT (AG2)",
+                //    credit = 0,
+                //    debit = 0,
+                //    account = "421.00.2.000"
+                //};
+                //data.Add(credit2x);
+            }
+
             //
             foreach (GarmentFinanceExportSalesJournalTempViewModel i in data1)
             {
@@ -186,17 +222,45 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 debit = Convert.ToDecimal(datax.Sum(a => a.AmountCC)),
                 account = "500.00.2.000",
             };
-            data.Add(debit3);
+            if (debit3.debit > 0)
+            {
+                data.Add(debit3);
+            }
+            else
+            {
+                var debit3x = new GarmentFinanceExportSalesJournalViewModel
+                {
+                    remark = "HARGA POKOK PENJUALAN(AG2)",
+                    credit = 0,
+                    debit = 0,
+                    account = "500.00.2.000",
+                };
+                data.Add(debit3x);
+            }
             //
             var stock = new GarmentFinanceExportSalesJournalViewModel
             {
-                remark = "     PERSEDIAAN BARANG JADI (AG2)",
+                remark = "       PERSEDIAAN BARANG JADI (AG2)",
                 credit = Convert.ToDecimal(datax.Sum(a => a.AmountCC)),
                 debit = 0,
                 account = "114.01.2.000",
             };
 
-            data.Add(stock);
+            if (stock.credit > 0)
+            {
+                data.Add(stock);
+            }
+            else
+            {
+                var stockx = new GarmentFinanceExportSalesJournalViewModel
+                {
+                    remark = "       PERSEDIAAN BARANG JADI (AG2)",
+                    credit = 0,
+                    debit = 0,
+                    account = "114.01.2.000",
+                };
+                data.Add(stockx);
+            }
 
             var total = new GarmentFinanceExportSalesJournalViewModel
             {
@@ -205,7 +269,21 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 debit = join.Sum(a => a.credit) + Convert.ToDecimal(datax.Sum(a => a.AmountCC)),
                 account = ""
             };
-            data.Add(total);
+            if (total.credit > 0)
+            {
+                data.Add(total);
+            }
+            else
+            {
+                var totalx = new GarmentFinanceExportSalesJournalViewModel
+                {
+                    remark = "",
+                    credit = 0,
+                    debit = 0,
+                    account = ""
+                };
+                data.Add(totalx);
+            }
             return data;
         }
 
