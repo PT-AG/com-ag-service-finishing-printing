@@ -17,7 +17,7 @@ using OfficeOpenXml;
 
 namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.Report
 {
-    public class GarmentFinanceLocalSalesJournalService : IGarmentFinanceLocalSalesJournalService
+    public class GarmentFinanceDetailExportSalesJournalService : IGarmentFinanceDetailExportSalesJournalService
     {
         private readonly IGarmentShippingInvoiceRepository repository;
         private readonly IGarmentPackingListRepository plrepository;
@@ -26,7 +26,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
         private readonly IIdentityProvider _identityProvider;
         private readonly IServiceProvider _serviceProvider;
 
-        public GarmentFinanceLocalSalesJournalService(IServiceProvider serviceProvider)
+        public GarmentFinanceDetailExportSalesJournalService(IServiceProvider serviceProvider)
         {
             repository = serviceProvider.GetService<IGarmentShippingInvoiceRepository>();
             plrepository = serviceProvider.GetService<IGarmentPackingListRepository>();
@@ -56,7 +56,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
             return data;
         }
-        public List<GarmentFinanceLocalSalesJournalViewModel> GetReportQuery(DateTime? dateFrom, DateTime? dateTo, int offset)
+        public List<GarmentFinanceDetailExportSalesJournalViewModel> GetReportQuery(DateTime? dateFrom, DateTime? dateTo, int offset)
         {
 
             //DateTime dateFrom = new DateTime(year, month, 1);
@@ -67,225 +67,199 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
             DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
 
-            List<GarmentFinanceLocalSalesJournalViewModel> data = new List<GarmentFinanceLocalSalesJournalViewModel>();
-            List<GarmentFinanceLocalSalesJournalTempViewModel> data1 = new List<GarmentFinanceLocalSalesJournalTempViewModel>();
+            List<GarmentFinanceDetailExportSalesJournalViewModel> data = new List<GarmentFinanceDetailExportSalesJournalViewModel>();
+            List<GarmentFinanceDetailExportSalesJournalTempViewModel> data1 = new List<GarmentFinanceDetailExportSalesJournalTempViewModel>();
 
             var queryInv = repository.ReadAll();
             var queryInvItm = itemrepository.ReadAll();
 
             var queryPL = plrepository.ReadAll()
                 .Where(w => w.TruckingDate.AddHours(offset).Date >= DateFrom && w.TruckingDate.AddHours(offset).Date <= DateTo.Date
-                    && w.PackingListType == "LOKAL" && (w.InvoiceType == "AG" || w.InvoiceType == "DS" || w.InvoiceType == "AGR" || w.InvoiceType == "SMR"));
+                    && w.PackingListType != "LOKAL" && (w.InvoiceType == "AG" || w.InvoiceType == "DS" || w.InvoiceType == "AGR" || w.InvoiceType == "SMR"));
 
             var joinQuery = from a in queryInv
                             join c in queryInvItm on a.Id equals c.GarmentShippingInvoiceId
                             join b in queryPL on a.PackingListId equals b.Id
                             where a.IsDeleted == false && b.IsDeleted == false
-                            select new GarmentFinanceLocalSalesJournalTempViewModel
+
+                            select new GarmentFinanceDetailExportSalesJournalTempViewModel
                             {
-                                InvoiceType = b.InvoiceType,
-                                RO_Number = c.RONo,
-                                TotalAmount = a.TotalAmount,
-                                PEBDate = a.PEBDate,
-                                Qty = c.Quantity,
-                                Price = c.Price,
-                                Rate = 1,
-                                AmountCC = 0,
+                                invoicetype = b.InvoiceType,
+                                invoiceno = a.InvoiceNo,
+                                truckingdate = b.TruckingDate,
+                                pebdate = a.PEBDate,
+                                buyer = a.BuyerAgentCode + "-" + a.BuyerAgentName,
+                                pebno = a.PEBNo,
+                                rono = c.RONo,
+                                currencycode = "IDR",
+                                rate = 1,
+                                qty = c.Quantity,
+                                price = c.Price,
+                                amount = Convert.ToDecimal(c.Quantity) * c.Price,
+                                vatamount = (Convert.ToDecimal(c.Quantity) * c.Price) * 11/100,                               
+                                amountcc = 0,
                             };
 
-            //List<dataQuery1> dataQuery1 = new List<dataQuery1>();
 
-            //foreach (var invoice in joinQuery.ToList())
-            //{
-            //    GarmentCurrency currency = GetCurrencyPEBDate(invoice.PEBDate.Date.ToShortDateString());
-            //    var rate = currency != null ? Convert.ToDecimal(currency.rate) : 0;
-            //    invoice.Rate = rate;
-            //    dataQuery1.Add(invoice);
-            //}
 
-            var join = from a in joinQuery
-                       select new GarmentFinanceLocalSalesJournalViewModel
-                       {
-                           remark = a.InvoiceType == "AG" || a.InvoiceType == "DS" ? "       PENJUALAN LOKAL (AG2)" : "       PENJUALAN LAIN-LAIN LOKAL (AG2)",
-                           credit = Convert.ToDecimal(a.Qty) * a.Price * a.Rate,
-                           debit = Convert.ToDecimal(a.Qty) * a.Price * 111 / 100,
-                           account = a.InvoiceType == "AG" || a.InvoiceType == "DS" ? "411.00.2.000" : "411.00.2.000"
-                       };
-
-            var debit = new GarmentFinanceLocalSalesJournalViewModel
-            {
-                remark = "PIUTANG USAHA LOKAL(AG2)",
-                credit = 0,
-                debit = join.Sum(a => a.debit),
-                account = "112.00.2.000"
-            };
-            if (debit.debit > 0)
-            {
-                data.Add(debit);
-            }
-            else
-            {
-                var debitx = new GarmentFinanceLocalSalesJournalViewModel
-                {
-                    remark = "PIUTANG USAHA LOKAL(AG2)",
-                    credit = 0,
-                    debit = 0,
-                    account = "112.00.2.000"
-                };
-                data.Add(debitx);
-            }
-
-            var sumquery = join.ToList()
-                   .GroupBy(x => new { x.remark, x.account }, (key, group) => new
-                   {
-                       Remark = key.remark,
-                       Account = key.account,
-                       Credit = group.Sum(s => s.credit)
-                   }).OrderBy(a => a.Remark);
-            foreach (var item in sumquery)
-            {
-                var obj = new GarmentFinanceLocalSalesJournalViewModel
-                {
-                    remark = item.Remark,
-                    credit = item.Credit,
-                    debit = 0,
-                    account = item.Account
-                };
-
-                data.Add(obj);
-            }
             //
-            if (join.ToList().Count == 0)
+            foreach (GarmentFinanceDetailExportSalesJournalTempViewModel i in joinQuery)
             {
-                var credit1x = new GarmentFinanceLocalSalesJournalViewModel
+                var data2 = GetCostCalculation(i.rono);
+              
+                GarmentCurrency currency = GetCurrencyPEBDate(i.pebdate.Date.ToShortDateString());
+                var rate = currency != null ? Convert.ToDecimal(currency.rate) : 0;
+
+                data1.Add(new GarmentFinanceDetailExportSalesJournalTempViewModel
                 {
-                    remark = "       PENJUALAN LOKAL (AG2)",
-                    credit = 0,
-                    debit = 0,
-                    account = "411.00.2.000"
-                };
-                data.Add(credit1x);
-
-                //var credit2x = new GarmentFinanceLocalSalesJournalViewModel
-                //{
-                //    remark = "       PENJUALAN LAIN-LAIN LOKAL (AG2)",
-                //    credit = 0,
-                //    debit = 0,
-                //    account = "411.00.2.000"
-                //};
-                //data.Add(credit2x);
-            }
-
-            var ppn = new GarmentFinanceLocalSalesJournalViewModel
-            {
-                remark = "       PPN KELUARAN (AG2)",
-                credit = join.Sum(a => a.debit) - join.Sum(a => a.credit),
-                debit = 0,
-                account = "217.01.2.000",
-            };
-
-            if (ppn.credit > 0)
-            {
-                data.Add(ppn);
-            }
-            else
-            {
-                var ppnx = new GarmentFinanceLocalSalesJournalViewModel
-                {
-                    remark = "       PPN KELUARAN (AG2)",
-                    credit = 0,
-                    debit = 0,
-                    account = "217.01.2.000",
-                };
-                data.Add(ppnx);
-            }
-            //
-            foreach (GarmentFinanceLocalSalesJournalTempViewModel i in joinQuery)
-            {
-                var data2 = GetCostCalculation(i.RO_Number);
-
-                data1.Add(new GarmentFinanceLocalSalesJournalTempViewModel
-                {
-                    InvoiceType = i.InvoiceType,
-                    RO_Number = i.RO_Number,
-                    PEBDate = i.PEBDate,
-                    TotalAmount = i.TotalAmount,
-                    Rate = i.Rate,
-                    Qty = i.Qty,
-                    Price = i.Price,
-                    AmountCC = data2 == null || data2.Count == 0 ? 0 : data2.FirstOrDefault().AmountCC * i.Qty,
+                    invoicetype = i.invoicetype,
+                    invoiceno = i.invoiceno,
+                    truckingdate = i.truckingdate,
+                    pebdate = i.pebdate,
+                    buyer = i.buyer,
+                    pebno = i.pebno,
+                    rono = i.rono,
+                    currencycode = "USD",
+                    rate = rate,
+                    qty = i.qty,
+                    price = i.price,
+                    amount = i.amount,
+                    vatamount = i.vatamount,                  
+                    amountcc = data2 == null || data2.Count == 0 ? 0 : data2.FirstOrDefault().AmountCC * i.qty,
                 });
             };
-
             //
-            var debit3 = new GarmentFinanceLocalSalesJournalViewModel
+
+            var joinQuery1 = from a in data1
+                            
+                             group new { AmtInv = a.amount, VatAmt = a.vatamount, AmtCC=a.amountcc } by new
+
+                             { a.invoicetype, a.invoiceno, a.truckingdate, a.pebno, a.buyer, a.currencycode, a.rate } into G
+
+                             select new GarmentFinanceDetailExportSalesJournalViewModel
+                             {
+                                 invoicetype = G.Key.invoicetype,
+                                 invoiceno = G.Key.invoiceno,
+                                 truckingdate = G.Key.truckingdate,
+                                 buyer = G.Key.buyer,
+                                 pebno = G.Key.pebno,
+                                 currencycode = G.Key.currencycode,
+                                 rate = G.Key.rate,
+                                 amount = Math.Round(G.Sum(c => c.AmtInv), 2) * G.Key.rate,
+                                 vatamount = 0,
+                                 amountcc = Math.Round(G.Sum(c => c.AmtCC), 2) ,
+                                 coaname = "-",
+                                 account = "-",
+                                 debit = 0,
+                                 credit = 0,
+                             };
+            //
+
+            foreach (GarmentFinanceDetailExportSalesJournalViewModel x in joinQuery1.OrderBy(x => x.invoiceno))
             {
-                remark = "HARGA POKOK PENJUALAN(AG2)",
-                credit = 0,
-                debit = Convert.ToDecimal(data1.Sum(a => a.AmountCC)),
-                account = "500.00.2.000",
-            };
-            if (debit3.debit > 0)
-            {
-                data.Add(debit3);
-            }
-            else
-            {
-                var debit3x = new GarmentFinanceLocalSalesJournalViewModel
+                var debit = new GarmentFinanceDetailExportSalesJournalViewModel
                 {
-                    remark = "HARGA POKOK PENJUALAN(AG2)",
+                    invoicetype = x.invoicetype,
+                    invoiceno = x.invoiceno,
+                    truckingdate = x.truckingdate,
+                    buyer = x.buyer,
+                    pebno = x.pebno,
+                    currencycode = x.currencycode,
+                    rate = x.rate,
+                    amount = 0,
+                    vatamount = 0,
+                    amountcc = 0,
+                    coaname = "PIUTANG USAHA LOKAL(AG2)",
+                    account = "112.00.2.000",
+                    debit = x.amount,
                     credit = 0,
+                };
+
+                data.Add(debit);
+
+                var credit1 = new GarmentFinanceDetailExportSalesJournalViewModel
+                {
+                   invoicetype = x.invoicetype,
+                    invoiceno = x.invoiceno,
+                    truckingdate = x.truckingdate,
+                    buyer = x.buyer,
+                    pebno = x.pebno,
+                    currencycode = x.currencycode,
+                    rate = x.rate,
+                    amount = 0,
+                    vatamount = 0,
+                    amountcc = 0,
+                    coaname = x.invoicetype == "AG" || x.invoicetype == "DS" ? "       PENJUALAN LOKAL (AG2)" : "       PENJUALAN LAIN-LAIN LOKAL (AG2)",
+                    account = x.invoicetype == "AG" || x.invoicetype == "DS" ? "411.00.2.000" : "411.00.2.000",
                     debit = 0,
+                    credit = x.amount,
+                };
+
+                data.Add(credit1);
+
+                ///
+
+                var debit3 = new GarmentFinanceDetailExportSalesJournalViewModel
+                {
+                    invoicetype = x.invoicetype,
+                    invoiceno = x.invoiceno,
+                    truckingdate = x.truckingdate,
+                    buyer = x.buyer,
+                    pebno = x.pebno,
+                    currencycode = x.currencycode,
+                    rate = x.rate,
+                    amount = 0,
+                    vatamount = 0,
+                    amountcc = 0,
+                    coaname = "HARGA POKOK PENJUALAN(AG2)",
                     account = "500.00.2.000",
-                };
-                data.Add(debit3x);
-            }
-            //
-            var stock = new GarmentFinanceLocalSalesJournalViewModel
-            {
-                remark = "       PERSEDIAAN BARANG JADI (AG2)",
-                credit = Convert.ToDecimal(data1.Sum(a => a.AmountCC)),
-                debit = 0,
-                account = "114.01.2.000",
-            };
-            if (stock.credit > 0)
-            {
-                data.Add(stock);
-            }
-            else
-            {
-                var stockx = new GarmentFinanceLocalSalesJournalViewModel
-                {
-                    remark = "       PERSEDIAAN BARANG JADI (AG2)",
+                    debit = Convert.ToDecimal(x.amountcc),
                     credit = 0,
-                    debit = 0,
-                    account = "114.01.2.000",
                 };
-                data.Add(stockx);
+                data.Add(debit3);
+
+                //
+                var stock = new GarmentFinanceDetailExportSalesJournalViewModel
+                {
+                    invoicetype = x.invoicetype,
+                    invoiceno = x.invoiceno,
+                    truckingdate = x.truckingdate,
+                    buyer = x.buyer,
+                    pebno = x.pebno,
+                    currencycode = x.currencycode,
+                    rate = x.rate,
+                    amount = 0,
+                    vatamount = 0,
+                    amountcc = 0,
+                    coaname = "       PERSEDIAAN BARANG JADI (AG2)",
+                    account = "114.01.2.000",
+                    debit = 0,
+                    credit = Convert.ToDecimal(x.amountcc),
+                };
+                data.Add(stock);
+
             }
 
-            var total = new GarmentFinanceLocalSalesJournalViewModel
+            var total = new GarmentFinanceDetailExportSalesJournalViewModel
             {
-                remark = "",
-                credit = join.Sum(a => a.debit) + Convert.ToDecimal(data1.Sum(a => a.AmountCC)),
-                debit = join.Sum(a => a.debit) + Convert.ToDecimal(data1.Sum(a => a.AmountCC)),
-                account = "JUMLAH"
+                invoicetype = "",
+                invoiceno = "",
+                truckingdate = DateTimeOffset.MinValue,
+                buyer = "",
+                pebno = "",
+                currencycode = "",
+                rate = 0,
+                amount = 0,
+                vatamount = 0,
+                amountcc = 0,
+                coaname = "",
+                account = "J U M L A H",
+                debit = joinQuery1.Sum(a => a.amount) + Convert.ToDecimal(joinQuery1.Sum(a => a.amountcc)),
+                credit = joinQuery1.Sum(a => a.amount) + Convert.ToDecimal(joinQuery1.Sum(a => a.amountcc)),
             };
-            if (total.credit > 0)
-            {
-                data.Add(total);
-            }
-            else
-            {
-                var totalx = new GarmentFinanceLocalSalesJournalViewModel
-                {
-                    remark = "",
-                    credit = 0,
-                    debit = 0,
-                    account = "JUMLAH"
-                };
-                data.Add(totalx);
-            }
+          
+            data.Add(total);
+
             return data;
         }
 
@@ -317,11 +291,11 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             }
         }
 
-        public List<GarmentFinanceLocalSalesJournalViewModel> GetReportData(DateTime? dateFrom, DateTime? dateTo, int offset)
-        {
-            var Query = GetReportQuery(dateFrom, dateTo, offset);
-            return Query.ToList();
-        }
+        //public List<GarmentFinanceDetailLocalSalesJournalViewModel> GetReportData(DateTime? dateFrom, DateTime? dateTo, int offset)
+        //{
+        //    var Query = GetReportQuery(dateFrom, dateTo, offset);
+        //    return Query.ToList();
+        //}
 
         public MemoryStream GenerateExcel(DateTime? dateFrom, DateTime? dateTo, int offset)
         {
@@ -331,11 +305,17 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             var Query = GetReportQuery(dateFrom, dateTo, offset);
             DataTable result = new DataTable();
 
-            result.Columns.Add(new DataColumn() { ColumnName = "AKUN DAN KETERANGAN", DataType = typeof(string) });
-            result.Columns.Add(new DataColumn() { ColumnName = "AKUN", DataType = typeof(string) });
+            result.Columns.Add(new DataColumn() { ColumnName = "NO INVOICE", DataType = typeof(string) });
+            result.Columns.Add(new DataColumn() { ColumnName = "TGL TRUCKING", DataType = typeof(string) });
+            result.Columns.Add(new DataColumn() { ColumnName = "NO AKUN ", DataType = typeof(string) });
+            result.Columns.Add(new DataColumn() { ColumnName = "NAMA AKUN", DataType = typeof(string) });
+            result.Columns.Add(new DataColumn() { ColumnName = "BUYER", DataType = typeof(string) });
+            result.Columns.Add(new DataColumn() { ColumnName = "NO PEB", DataType = typeof(string) });
+            
+            result.Columns.Add(new DataColumn() { ColumnName = "MATA UANG", DataType = typeof(string) });
+            result.Columns.Add(new DataColumn() { ColumnName = "KURS", DataType = typeof(string) });
             result.Columns.Add(new DataColumn() { ColumnName = "DEBET", DataType = typeof(string) });
             result.Columns.Add(new DataColumn() { ColumnName = "KREDIT", DataType = typeof(string) });
-
             ExcelPackage package = new ExcelPackage();
 
             if (Query.ToArray().Count() == 0)
@@ -347,10 +327,17 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 {
                     var sheet = package.Workbook.Worksheets.Add(item.Value);
 
-                    sheet.Column(1).Width = 50;
+                    sheet.Column(1).Width = 15;
                     sheet.Column(2).Width = 15;
-                    sheet.Column(3).Width = 20;
-                    sheet.Column(4).Width = 20;
+                    sheet.Column(3).Width = 15;
+                    sheet.Column(4).Width = 50;
+                    sheet.Column(5).Width = 50;
+                    sheet.Column(6).Width = 15;
+
+                    sheet.Column(9).Width = 15;
+                    sheet.Column(10).Width = 15;
+                    sheet.Column(11).Width = 20;
+                    sheet.Column(12).Width = 20;
 
                     #region KopTable
                     sheet.Cells[$"A1:D1"].Value = "PT AMBASSADOR GARMINDO";
@@ -365,7 +352,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                     sheet.Cells[$"A2:D2"].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
                     sheet.Cells[$"A2:D2"].Style.Font.Bold = true;
 
-                    sheet.Cells[$"A4:D4"].Value = "IKHTISAR JURNAL";
+                    sheet.Cells[$"A4:D4"].Value = "RINCIAN JURNAL";
                     sheet.Cells[$"A4:D4"].Merge = true;
                     sheet.Cells[$"A4:D4"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
                     sheet.Cells[$"A4:D4"].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
@@ -373,7 +360,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
                     sheet.Cells[$"C5"].Value = "BUKU HARIAN";
                     sheet.Cells[$"C5"].Style.Font.Bold = true;
-                    sheet.Cells[$"D5"].Value = ": PENJUALAN LOKAL";
+                    sheet.Cells[$"D5"].Value = ": PENJUALAN EXPORT";
                     sheet.Cells[$"D5"].Style.Font.Bold = true;
 
                     sheet.Cells[$"C6"].Value = "PERIODE";
@@ -393,8 +380,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 foreach (var d in Query)
                 {
                     index++;
-
-                    result.Rows.Add(d.remark, d.account, d.debit, d.credit);
+             
+                    result.Rows.Add( d.invoiceno, d.truckingdate, d.account, d.coaname, d.buyer, d.pebno, d.currencycode, d.rate, d.debit, d.credit);
                 }
 
                 bool styling = true;
@@ -402,6 +389,19 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 foreach (KeyValuePair<DataTable, String> item in new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Territory") })
                 {
                     var sheet = package.Workbook.Worksheets.Add(item.Value);
+
+
+                    sheet.Column(1).Width = 15;
+                    sheet.Column(2).Width = 15;
+                    sheet.Column(3).Width = 15;
+                    sheet.Column(4).Width = 50;
+                    sheet.Column(5).Width = 50;
+                    sheet.Column(6).Width = 15;
+
+                    sheet.Column(9).Width = 15;
+                    sheet.Column(10).Width = 15;
+                    sheet.Column(11).Width = 20;
+                    sheet.Column(12).Width = 20;
 
                     #region KopTable
                     sheet.Cells[$"A1:D1"].Value = "PT AMBASSADOR GARMINDO";
@@ -416,7 +416,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                     sheet.Cells[$"A2:D2"].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
                     sheet.Cells[$"A2:D2"].Style.Font.Bold = true;
 
-                    sheet.Cells[$"A4:D4"].Value = "IKHTISAR JURNAL";
+                    sheet.Cells[$"A4:D4"].Value = "RINCIAN JURNAL";
                     sheet.Cells[$"A4:D4"].Merge = true;
                     sheet.Cells[$"A4:D4"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
                     sheet.Cells[$"A4:D4"].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
@@ -424,7 +424,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
                     sheet.Cells[$"C5"].Value = "BUKU HARIAN";
                     sheet.Cells[$"C5"].Style.Font.Bold = true;
-                    sheet.Cells[$"D5"].Value = ": PENJUALAN LOKAL";
+                    sheet.Cells[$"D5"].Value = ": PENJUALAN EXPORT";
                     sheet.Cells[$"D5"].Style.Font.Bold = true;
 
                     sheet.Cells[$"C6"].Value = "PERIODE";
@@ -444,57 +444,20 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
             return stream;
         }
-        //
-
-        //public MemoryStream GenerateExcel(DateTime? dateFrom, DateTime? dateTo, int offset)
-        //{
-        //    var Query = GetReportQuery(dateFrom, dateTo, offset);
-        //    DataTable result = new DataTable();
-
-        //    result.Columns.Add(new DataColumn() { ColumnName = "AKUN DAN KETERANGAN", DataType = typeof(string) });
-        //    result.Columns.Add(new DataColumn() { ColumnName = "AKUN", DataType = typeof(string) });
-        //    result.Columns.Add(new DataColumn() { ColumnName = "DEBET", DataType = typeof(string) });
-        //    result.Columns.Add(new DataColumn() { ColumnName = "KREDIT", DataType = typeof(string) });
-
-        //    if (Query.ToArray().Count() == 0)
-        //        result.Rows.Add("", "", "", "");
-        //    else
-        //    {
-        //        foreach (var d in Query)
-        //        {
-        //            string Credit = d.credit > 0 ? string.Format("{0:N2}", d.credit) : "";
-        //            string Debit = d.debit > 0 ? string.Format("{0:N2}", d.debit) : "";
-
-        //            result.Rows.Add(d.remark, d.account, Debit, Credit);
-        //        }
-        //    }
-
-        //    return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Sheet1") }, true);
-        //}
+        
     }
 
-    public class BaseResponse1<T>
-    {
-        public string apiVersion { get; set; }
-        public int statusCode { get; set; }
-        public string message { get; set; }
-        public T data { get; set; }
-
-        public static implicit operator BaseResponse1<T>(BaseResponse1<string> v)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    //public class dataQuery1
+    //public class BaseResponse<T>
     //{
-    //    public string InvoiceType { get; set; }
-    //    public string RO_Number { get; set; }
-    //    public DateTimeOffset PEBDate { get; set; }
-    //    public decimal TotalAmount { get; set; }
-    //    public decimal Rate { get; set; }
-    //    public double Qty { get; set; }
-    //    public decimal Price { get; set; }
-    //    public double AmountCC { get; set; }
-    //}    
+    //    public string apiVersion { get; set; }
+    //    public int statusCode { get; set; }
+    //    public string message { get; set; }
+    //    public T data { get; set; }
+
+    //    public static implicit operator BaseResponse<T>(BaseResponse<string> v)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+    //}
+   
 }

@@ -267,7 +267,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 remark = "",
                 credit = join.Sum(a => a.credit) + Convert.ToDecimal(datax.Sum(a => a.AmountCC)),
                 debit = join.Sum(a => a.credit) + Convert.ToDecimal(datax.Sum(a => a.AmountCC)),
-                account = ""
+                account = "JUMLAH"
             };
             if (total.credit > 0)
             {
@@ -280,7 +280,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                     remark = "",
                     credit = 0,
                     debit = 0,
-                    account = ""
+                    account = "JUMLAH"
                 };
                 data.Add(totalx);
             }

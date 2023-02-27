@@ -381,6 +381,8 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi
             services.AddTransient<IGarmentDebiturBalanceService, GarmentDebiturBalanceService>();
             services.AddTransient<IGarmentFinanceExportSalesJournalService, GarmentFinanceExportSalesJournalService>();
             services.AddTransient<IGarmentFinanceLocalSalesJournalService, GarmentFinanceLocalSalesJournalService>();
+            services.AddTransient<IGarmentFinanceDetailLocalSalesJournalService, GarmentFinanceDetailLocalSalesJournalService>();
+            services.AddTransient<IGarmentFinanceDetailExportSalesJournalService, GarmentFinanceDetailExportSalesJournalService>();
             services.AddTransient<IGarmentOmzetMonthlyByBrandService, GarmentOmzetMonthlyByBrandService>();
 
             services.AddTransient<IGarmentDraftPackingListItemService, GarmentDraftPackingListItemService>();
