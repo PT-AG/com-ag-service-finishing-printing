@@ -106,7 +106,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
             result.Columns.Add(new DataColumn() { ColumnName = "Container No", DataType = typeof(string) });
             result.Columns.Add(new DataColumn() { ColumnName = "Shipping Seal", DataType = typeof(string) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Dan Liris Seal", DataType = typeof(string) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Ambassador Garmindo Seal", DataType = typeof(string) });
             result.Columns.Add(new DataColumn() { ColumnName = "Total Karton", DataType = typeof(string) });
             result.Columns.Add(new DataColumn() { ColumnName = "Quantity PCS", DataType = typeof(string) });
             result.Columns.Add(new DataColumn() { ColumnName = "Quantity SETS", DataType = typeof(string) });

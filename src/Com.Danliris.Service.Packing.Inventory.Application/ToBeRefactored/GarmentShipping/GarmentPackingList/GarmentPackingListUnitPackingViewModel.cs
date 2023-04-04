@@ -90,8 +90,11 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
                                 if (detail.Sizes == null || detail.Sizes.Count < 1)
                                 {
-                                    errorDetail["SizesCount"] = "Sizes tidak boleh kosong";
-                                    errorDetailsCount++;
+                                    if (PackingListType != "LOKAL")
+                                    {
+                                        errorDetail["SizesCount"] = "Sizes tidak boleh kosong";
+                                        errorDetailsCount++;
+                                    }
                                 }
                                 else
                                 {
