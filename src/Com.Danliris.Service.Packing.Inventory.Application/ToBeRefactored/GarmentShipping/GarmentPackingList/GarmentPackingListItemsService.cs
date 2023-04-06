@@ -223,6 +223,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 NettWeight = model.NettWeight,
                 NetNetWeight = model.NetNetWeight,
                 TotalCartons = model.TotalCartons,
+                TotalQuantity=model.TotalQuantity,
                 Measurements = model.Measurements.Where(i => i.CreatedBy == _identityProvider.Username).Select(m => new GarmentPackingListMeasurementViewModel
                 {
                     Active = m.Active,
