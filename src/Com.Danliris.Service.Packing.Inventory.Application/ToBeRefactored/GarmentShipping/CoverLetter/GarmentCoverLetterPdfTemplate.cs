@@ -137,7 +137,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             tableDetail.AddCell(cellDetail);
             cellDetail.Phrase = new Phrase("Seal Pelayaran", normal_font);
             tableDetail.AddCell(cellDetail);
-            cellDetail.Phrase = new Phrase("Seal Dan Liris", normal_font);
+            cellDetail.Phrase = new Phrase("Seal Ambassador Garmindo", normal_font);
             tableDetail.AddCell(cellDetail);
             cellDetail.Phrase = new Phrase("Jumlah Muatan", normal_font);
             tableDetail.AddCell(cellDetail);
