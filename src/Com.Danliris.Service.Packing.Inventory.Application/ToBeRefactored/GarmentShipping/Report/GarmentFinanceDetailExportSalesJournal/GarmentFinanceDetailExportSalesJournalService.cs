@@ -14,6 +14,8 @@ using Com.Danliris.Service.Packing.Inventory.Application.CommonViewModelObjectPr
 using Newtonsoft.Json;
 using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Utilities;
 using OfficeOpenXml;
+using System.Net.Http;
+using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.Monitoring.GarmentRecapOmzetReport;
 
 namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.Report
 {
@@ -34,28 +36,28 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             _identityProvider = serviceProvider.GetService<IIdentityProvider>();
             _serviceProvider = serviceProvider;
         }
-        private GarmentCurrency GetCurrencyPEBDate(string stringDate)
-        {
-            var jsonSerializerSettings = new JsonSerializerSettings
-            {
-                MissingMemberHandling = MissingMemberHandling.Ignore
-            };
+        //private GarmentCurrency GetCurrencyPEBDate(string stringDate)
+        //{
+        //    var jsonSerializerSettings = new JsonSerializerSettings
+        //    {
+        //        MissingMemberHandling = MissingMemberHandling.Ignore
+        //    };
 
-            var httpClient = (IHttpClientService)_serviceProvider.GetService(typeof(IHttpClientService));
+        //    var httpClient = (IHttpClientService)_serviceProvider.GetService(typeof(IHttpClientService));
 
-            var currencyUri = ApplicationSetting.CoreEndpoint + $"master/garment-detail-currencies/sales-debtor-currencies-peb?stringDate={stringDate}";
-            var currencyResponse = httpClient.GetAsync(currencyUri).Result.Content.ReadAsStringAsync();
+        //    var currencyUri = ApplicationSetting.CoreEndpoint + $"master/garment-detail-currencies/sales-debtor-currencies-peb?stringDate={stringDate}";
+        //    var currencyResponse = httpClient.GetAsync(currencyUri).Result.Content.ReadAsStringAsync();
 
-            var currencyResult = new BaseResponse<GarmentCurrency>()
-            {
-                data = new GarmentCurrency()
-            };
-            Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(currencyResponse.Result);
-            var json = result.Single(p => p.Key.Equals("data")).Value;
-            var data = JsonConvert.DeserializeObject<GarmentCurrency>(json.ToString());
+        //    var currencyResult = new BaseResponse<GarmentCurrency>()
+        //    {
+        //        data = new GarmentCurrency()
+        //    };
+        //    Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(currencyResponse.Result);
+        //    var json = result.Single(p => p.Key.Equals("data")).Value;
+        //    var data = JsonConvert.DeserializeObject<GarmentCurrency>(json.ToString());
 
-            return data;
-        }
+        //    return data;
+        //}
         public List<GarmentFinanceDetailExportSalesJournalViewModel> GetReportQuery(DateTime? dateFrom, DateTime? dateTo, int offset)
         {
 
@@ -91,8 +93,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                                 buyer = a.BuyerAgentCode + "-" + a.BuyerAgentName,
                                 pebno = a.PEBNo,
                                 rono = c.RONo,
-                                currencycode = "IDR",
-                                rate = 1,
+                                currencycode = "USD",
+                                rate = 0,
                                 qty = c.Quantity,
                                 price = c.Price,
                                 amount = Convert.ToDecimal(c.Quantity) * c.Price,
@@ -100,16 +102,28 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                                 amountcc = 0,
                             };
 
+            //
+            var currencyFilters = joinQuery
+                         .GroupBy(o => new { o.pebdate, o.currencycode })
+                         //.Select(o => new CurrencyFilter { date = o.Key.PEBDate.ToOffset(new TimeSpan(_identityProvider.TimezoneOffset, 0, 0)).DateTime, code = o.Key.CurrencyCode })
+                         .Select(o => new CurrencyFilter { date = o.Key.pebdate.AddHours(offset).Date, code = o.Key.currencycode })
+                         .ToList();
 
+            var currencies = GetCurrencies(currencyFilters).Result;
+
+            decimal rate;
 
             //
             foreach (GarmentFinanceDetailExportSalesJournalTempViewModel i in joinQuery)
             {
                 var data2 = GetCostCalculation(i.rono);
               
-                GarmentCurrency currency = GetCurrencyPEBDate(i.pebdate.Date.ToShortDateString());
-                var rate = currency != null ? Convert.ToDecimal(currency.rate) : 0;
+                //GarmentCurrency currency = GetCurrencyPEBDate(i.pebdate.Date.ToShortDateString());
+                //var rate = currency != null ? Convert.ToDecimal(currency.rate) : 0;
 
+                rate = Convert.ToDecimal(currencies.Where(q => q.code == i.currencycode && q.date.Date == i.pebdate.AddHours(offset).Date).Select(s => s.rate).LastOrDefault());
+                i.rate = rate;
+         
                 data1.Add(new GarmentFinanceDetailExportSalesJournalTempViewModel
                 {
                     invoicetype = i.invoicetype,
@@ -169,9 +183,9 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                     amount = 0,
                     vatamount = 0,
                     amountcc = 0,
-                    coaname = "PIUTANG USAHA LOKAL(AG2)",
-                    account = "112.00.2.000",
-                    debit = x.amount,
+                    coaname = "PIUTANG USAHA EXPORT (AG2)",
+                    account = "112.00.3.000",
+                    debit = x.amount * x.rate,
                     credit = 0,
                 };
 
@@ -192,7 +206,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                     coaname = x.invoicetype == "AG" || x.invoicetype == "DS" ? "       PENJUALAN LOKAL (AG2)" : "       PENJUALAN LAIN-LAIN LOKAL (AG2)",
                     account = x.invoicetype == "AG" || x.invoicetype == "DS" ? "411.00.2.000" : "411.00.2.000",
                     debit = 0,
-                    credit = x.amount,
+                    credit = x.amount * x.rate,
                 };
 
                 data.Add(credit1);
@@ -254,13 +268,32 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 amountcc = 0,
                 coaname = "",
                 account = "J U M L A H",
-                debit = joinQuery1.Sum(a => a.amount) + Convert.ToDecimal(joinQuery1.Sum(a => a.amountcc)),
-                credit = joinQuery1.Sum(a => a.amount) + Convert.ToDecimal(joinQuery1.Sum(a => a.amountcc)),
+                debit = joinQuery1.Sum(a => a.amount * a.rate) + Convert.ToDecimal(joinQuery1.Sum(a => a.amountcc)),
+                credit = joinQuery1.Sum(a => a.amount * a.rate) + Convert.ToDecimal(joinQuery1.Sum(a => a.amountcc)),
             };
           
             data.Add(total);
 
             return data;
+        }
+
+        async Task<List<GarmentDetailCurrency>> GetCurrencies(List<CurrencyFilter> filters)
+        {
+            string uri = "master/garment-detail-currencies/single-by-code-date-peb";
+            IHttpClientService httpClient = (IHttpClientService)_serviceProvider.GetService(typeof(IHttpClientService));
+
+            var response = await httpClient.SendAsync(HttpMethod.Get, $"{ApplicationSetting.CoreEndpoint}{uri}", new StringContent(JsonConvert.SerializeObject(filters), Encoding.Unicode, "application/json"));
+            if (response.IsSuccessStatusCode)
+            {
+                var content = response.Content.ReadAsStringAsync().Result;
+                Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(content);
+                List<GarmentDetailCurrency> viewModel = JsonConvert.DeserializeObject<List<GarmentDetailCurrency>>(result.GetValueOrDefault("data").ToString());
+                return viewModel;
+            }
+            else
+            {
+                return new List<GarmentDetailCurrency>();
+            }
         }
 
         public List<CostCalculationGarmentForJournal> GetCostCalculation(string RO_Number)

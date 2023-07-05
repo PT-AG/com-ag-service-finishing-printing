@@ -16,6 +16,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
     public class GarmentFinanceExportSalesJournalTempViewModel
     {
         public string InvoiceType { get; set; }
+        public string CurrencyCode { get; set; }
         public string RO_Number { get; set; }
         public DateTimeOffset PEBDate { get; set; }
         public decimal TotalAmount { get; set; }
