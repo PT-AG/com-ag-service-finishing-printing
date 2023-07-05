@@ -192,7 +192,7 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Controllers.GarmentShipp
 					Buyer buyer = _service.GetBuyer(model.BuyerAgent.Id);
 					BankAccount bank = _service.GetBank(model.BankAccountId);
 					GarmentPackingListViewModel pl = await _packingListService.ReadById(model.PackingListId);
-                    if (model.PackingListType == "LOCAL")
+                    if (model.PackingListType == "LOKAL")
                     {
                         var PdfTemplate = new GarmentShippingInvoiceLocalPdfTemplate();
                         MemoryStream stream = PdfTemplate.GeneratePdfTemplate(model, buyer, bank, pl, timeoffsset);

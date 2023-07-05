@@ -146,7 +146,6 @@ using Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.Garment
 using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.Report;
 using Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.GarmentShipping.GarmentDraftPackingListItem;
 using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.GarmentDraftPackingListItem;
-using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.Report.GarmentFinanceLocalSalesJournal;
 using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.Monitoring.GarmentOmzetMonthlyByBrand;
 using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.Monitoring.GarmentLocalSalesOmzetUnPaid;
 using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.Monitoring.GarmentOmzetAnnualByUnitReport;
@@ -170,6 +169,7 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi
         {
             ApplicationSetting.CoreEndpoint = Configuration.GetValue<string>(Constant.CORE_ENDPOINT) ?? Configuration[Constant.CORE_ENDPOINT];
             ApplicationSetting.ProductionEndpoint = Configuration.GetValue<string>(Constant.GARMENT_PRODUCTION_ENDPOINT) ?? Configuration[Constant.GARMENT_PRODUCTION_ENDPOINT];
+            ApplicationSetting.SalesEndpoint = Configuration.GetValue<string>(Constant.GARMENT_SALES_ENDPOINT) ?? Configuration[Constant.GARMENT_SALES_ENDPOINT];         
             ApplicationSetting.StorageAccountName = Configuration.GetValue<string>(Constant.STORAGE_ACCOUNT_NAME) ?? Configuration[Constant.STORAGE_ACCOUNT_NAME];
             ApplicationSetting.StorageAccountKey = Configuration.GetValue<string>(Constant.STORAGE_ACCOUNT_KEY) ?? Configuration[Constant.STORAGE_ACCOUNT_KEY];
         }
@@ -381,6 +381,8 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi
             services.AddTransient<IGarmentDebiturBalanceService, GarmentDebiturBalanceService>();
             services.AddTransient<IGarmentFinanceExportSalesJournalService, GarmentFinanceExportSalesJournalService>();
             services.AddTransient<IGarmentFinanceLocalSalesJournalService, GarmentFinanceLocalSalesJournalService>();
+            services.AddTransient<IGarmentFinanceDetailLocalSalesJournalService, GarmentFinanceDetailLocalSalesJournalService>();
+            services.AddTransient<IGarmentFinanceDetailExportSalesJournalService, GarmentFinanceDetailExportSalesJournalService>();
             services.AddTransient<IGarmentOmzetMonthlyByBrandService, GarmentOmzetMonthlyByBrandService>();
 
             services.AddTransient<IGarmentDraftPackingListItemService, GarmentDraftPackingListItemService>();
@@ -508,15 +510,15 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi
                 app.UseHsts();
             }
 
-            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                var context = serviceScope.ServiceProvider.GetService<PackingInventoryDbContext>();
-                context.Database.SetCommandTimeout(1000);
-                context.Database.Migrate();
+            //using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            //{
+            //    var context = serviceScope.ServiceProvider.GetService<PackingInventoryDbContext>();
+            //    context.Database.SetCommandTimeout(1000);
+            //    context.Database.Migrate();
 
-                //var bus = serviceScope.ServiceProvider.GetService<IAzureServiceBusConsumer<ProductSKUInventoryMovementModel>>();
-                //bus.RegisterOnMessageHandlerAndReceiveMessages();
-            }
+            //    //var bus = serviceScope.ServiceProvider.GetService<IAzureServiceBusConsumer<ProductSKUInventoryMovementModel>>();
+            //    //bus.RegisterOnMessageHandlerAndReceiveMessages();
+            //}
 
             app.UseCors(PACKING_INVENTORY_POLICY);
 
