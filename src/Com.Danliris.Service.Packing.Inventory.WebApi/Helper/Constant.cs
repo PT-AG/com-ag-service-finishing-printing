@@ -7,5 +7,6 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi.Helper
         public const string GARMENT_SALES_ENDPOINT = "SalesEndpoint";
         public const string STORAGE_ACCOUNT_NAME = "StorageAccountName";
         public const string STORAGE_ACCOUNT_KEY = "StorageAccountKey";
+        public const string PURCHASING_ENDPOINT = "PurchasingEndpoint";
     }
 }

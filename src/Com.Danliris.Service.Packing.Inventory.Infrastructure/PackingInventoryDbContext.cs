@@ -61,6 +61,10 @@ using Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.Garment
 using Com.Danliris.Service.Packing.Inventory.Infrastructure.EntityConfigurations.GarmentShipping.GarmentDebiturBalance;
 using Com.Danliris.Service.Packing.Inventory.Data.Models.Garmentshipping.GarmentDraftPackingListItem;
 using Com.Danliris.Service.Packing.Inventory.Infrastructure.EntityConfigurations.GarmentShipping.GarmentShippingInstruction;
+using Com.Danliris.Service.Packing.Inventory.Infrastructure.EntityConfigurations.GarmentShipping.GarmentReceiptSubconPackingList;
+using Com.Danliris.Service.Packing.Inventory.Infrastructure.EntityConfigurations.GarmentShipping.ShippingLocalSalesNoteTS;
+using Com.Danliris.Service.Packing.Inventory.Infrastructure.EntityConfigurations.GarmentShipping.LocalCoverLetterTS;
+using Com.Danliris.Service.Packing.Inventory.Infrastructure.EntityConfigurations.GarmentShipping.LocalSalesDOTS;
 //using Com.Danliris.Service.Packing.Inventory.Infrastructure.EntityConfigurations.GarmentShipping.GarmentDraftPackingListItem;
 
 namespace Com.Danliris.Service.Packing.Inventory.Infrastructure
@@ -284,7 +288,18 @@ namespace Com.Danliris.Service.Packing.Inventory.Infrastructure
             //modelBuilder.ApplyConfiguration(new GarmentShippingCostStructureEntityTypeConfiguration());
             //modelBuilder.ApplyConfiguration(new GarmentShippingCostStructureItemEntityTypeConfiguration());
             //modelBuilder.ApplyConfiguration(new GarmentShippingCostStructureDetailEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new GarmentReceiptSubconPackingListEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new GarmentReceiptSubconPackingListItemEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new GarmentReceiptSubconPackingListDetailEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new GarmentReceiptSubconPackingListDetailSizeEntityTypeConfiguration());
 
+            modelBuilder.ApplyConfiguration(new GarmentShippingLocalSalesNoteTSConfig());
+            modelBuilder.ApplyConfiguration(new GarmentShippingLocalSalesNoteTSItemConfig());
+
+            modelBuilder.ApplyConfiguration(new GarmentLocalCoverLetterConfigTS());
+
+            modelBuilder.ApplyConfiguration(new GarmentShippingLocalSalesDOTSConfig());
+            modelBuilder.ApplyConfiguration(new GarmentShippingLocalSalesDOTSItemConfig());
             //modelBuilder.Entity<InventoryDocumentPackingItemModel>().HasQueryFilter(entity => !entity.IsDeleted);
             //modelBuilder.Entity<InventoryDocumentPackingModel>().HasQueryFilter(entity => !entity.IsDeleted);
             //modelBuilder.Entity<InventoryDocumentSKUItemModel>().HasQueryFilter(entity => !entity.IsDeleted);

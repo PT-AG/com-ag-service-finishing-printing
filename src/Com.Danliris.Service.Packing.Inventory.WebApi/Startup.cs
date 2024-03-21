@@ -149,6 +149,16 @@ using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentS
 using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.Monitoring.GarmentOmzetMonthlyByBrand;
 using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.Monitoring.GarmentLocalSalesOmzetUnPaid;
 using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.Monitoring.GarmentOmzetAnnualByUnitReport;
+using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.GarmentReceiptSubconPackingList;
+using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.ShippingLocalSalesNoteTS;
+using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.LocalCoverLetterTS;
+using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.LocalSalesDOTS;
+using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.GarmentSubcon.Report.FinishedGoodsMinutes;
+using Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.GarmentShipping.GarmentSubcon.Report.ShipmentLocalSalesNote;
+using Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.GarmentShipping.GarmentReceiptSubconPackingList;
+using Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.GarmentShipping.ShippingLocalSalesNoteTS;
+using Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.GarmentShipping.LocalCoverLetterTS;
+using Com.Danliris.Service.Packing.Inventory.Infrastructure.Repositories.GarmentShipping.LocalSalesDOTS;
 
 namespace Com.Danliris.Service.Packing.Inventory.WebApi
 {
@@ -172,6 +182,8 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi
             ApplicationSetting.SalesEndpoint = Configuration.GetValue<string>(Constant.GARMENT_SALES_ENDPOINT) ?? Configuration[Constant.GARMENT_SALES_ENDPOINT];         
             ApplicationSetting.StorageAccountName = Configuration.GetValue<string>(Constant.STORAGE_ACCOUNT_NAME) ?? Configuration[Constant.STORAGE_ACCOUNT_NAME];
             ApplicationSetting.StorageAccountKey = Configuration.GetValue<string>(Constant.STORAGE_ACCOUNT_KEY) ?? Configuration[Constant.STORAGE_ACCOUNT_KEY];
+            ApplicationSetting.PurchasingEndpoint = Configuration.GetValue<string>(Constant.PURCHASING_ENDPOINT) ?? Configuration[Constant.PURCHASING_ENDPOINT];
+
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -273,6 +285,15 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi
             services.AddTransient<IGarmentDebiturBalanceRepository, GarmentDebiturBalanceRepository>();
 
             services.AddTransient<IGarmentDraftPackingListItemRepository, GarmentDraftPackingListItemRepository>();
+
+            services.AddTransient<IGarmentReceiptSubconPackingListRepository, GarmentReceiptSubconPackingListRepository>();
+            services.AddTransient<IGarmentReceiptSubconPackingListItemRepository, GarmentReceiptSubconPackingListItemRepository>();
+            services.AddTransient<IGarmentReceiptSubconPackingListDetailRepository, GarmentReceiptSubconPackingListDetailRepository>();
+            services.AddTransient<IGarmentReceiptSubconPackingListDetailSizeRepository, GarmentReceiptSubconPackingListDetailSizeRepository>();
+            services.AddTransient<IGarmentShippingLocalSalesNoteTSRepository, GarmentShippingLocalSalesNoteTSRepository>();
+            services.AddTransient<IGarmentShippingLocalSalesNoteTSItemRepository, GarmentShippingLocalSalesNoteTSItemRepository>();
+            services.AddTransient<IGarmentLocalCoverLetterTSRepository, GarmentLocalCoverLetterTSRepository>();
+            services.AddTransient<IGarmentShippingLocalSalesDOTSRepository, GarmentShippingLocalSalesDOTSRepository>();
 
             #endregion
 
@@ -389,6 +410,13 @@ namespace Com.Danliris.Service.Packing.Inventory.WebApi
             services.AddTransient<IGarmentLocalSalesOmzetUnPaidService, GarmentLocalSalesOmzetUnPaidService>();
             services.AddTransient<IGarmentMonitoringDeliveredPackingListSample, GarmentMonitoringDeliveredPackingListSampleService>();
             services.AddTransient<IGarmentOmzetAnnualByUnitReportService, GarmentOmzetAnnualByUnitReportService>();
+
+            services.AddTransient<IGarmentReceiptSubconPackingListService, GarmentReceiptSubconPackingListService>();
+            services.AddTransient<IGarmentShippingLocalSalesNoteTSService, GarmentShippingLocalSalesNoteTSService>();
+            services.AddTransient<IGarmentLocalCoverLetterTSService, GarmentLocalCoverLetterTSService>();
+            services.AddTransient<IGarmentShippingLocalSalesDOTSService, GarmentShippingLocalSalesDOTSService>();
+            services.AddTransient<IFinishedGoodsMinutesService, FinishedGoodsMinutesService>();
+            services.AddTransient<IShipmentLocalSalesNoteService, ShipmentLocalSalesNoteService>();
             #endregion
 
             // Register Provider

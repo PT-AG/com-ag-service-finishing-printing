@@ -67,4 +67,8 @@
     <ProjectReference Include="..\Com.Danliris.Service.Packing.Inventory.Data\Com.Danliris.Service.Packing.Inventory.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ToBeRefactored\GarmentShipping\GarmentSubcon\LocalSalesNoteTS\Report\" />
+  </ItemGroup>
+
 </Project>
