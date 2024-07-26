@@ -250,8 +250,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             detailTable.AddCell(cellLeft);
             cellLeft.Phrase = new Phrase(":", normal_font);
             detailTable.AddCell(cellLeft);
-            cellLeft.Phrase = new Phrase("PT. AMBASSADOR GARMINDO, Banaran, Grogol, Sukoharjo, Jawa Tengah,\n" +
-                                         "57552.\n" +
+            cellLeft.Phrase = new Phrase("PT. AMBASSADOR GARMINDO, Jl. Merapi Blok. E2 No. 23\n" +
+                                         "Banaran, Grogol, Sukoharjo, Jawa Tengah 57552.\n" +
                                          "PHONE : (0271) 732888, 7652913", normal_font);
             detailTable.AddCell(cellLeft);
 
@@ -390,7 +390,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             string[] headOffices = {
                 //"                                                                                                                                                                      Ref. No. : FM-00-SP-24-004",
                 "PT. AMBASSADOR GARMINDO",
-                //"SPINNING - WEAVING - FINISHING - PRINTING - GARMENT",
+                "Jl. Merapi Blok. E2 No. 23",
                 "Banaran, Grogol, Sukoharjo, Jawa Tengah",
                 "57552",
                 "                                                                                                                                                                                        Page " + (writer.PageNumber),

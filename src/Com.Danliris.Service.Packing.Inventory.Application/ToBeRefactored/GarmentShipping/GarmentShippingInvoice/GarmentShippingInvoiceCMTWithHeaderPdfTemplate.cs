@@ -792,9 +792,10 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
             cb.ShowTextAligned(PdfContentByte.ALIGN_LEFT, "Head Office :", marginLeft + 80, branchOfficeY, 0);
             string[] branchOffices = {
-                "Banaran, Grogol, Sukoharjo, Jawa Tengah",
-                "57552",
+                "Jl. Merapi Blok. E2 No. 23",
+                "Banaran, Grogol, Sukoharjo, Jawa Tengah 57552",
                 "Telp. (0271) 732888, 7652913",
+
                 "Website : www.ambassadorgarmindo.com",
             };
             for (int i = 0; i < branchOffices.Length; i++)

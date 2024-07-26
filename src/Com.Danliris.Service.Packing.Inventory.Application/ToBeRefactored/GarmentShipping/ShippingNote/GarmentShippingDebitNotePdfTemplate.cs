@@ -34,7 +34,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             PdfPCell cellHeadOffice = new PdfPCell { Border = Rectangle.NO_BORDER };
             cellHeadOffice.Phrase = new Phrase("Head Office : ", normal_font);
             tableHeadOffice.AddCell(cellHeadOffice);
-            cellHeadOffice.Phrase = new Phrase("Banaran, Grogol, Sukoharjo, Jawa Tengah\n57552\nTelp (0271) 732888, 7652913", normal_font);
+            cellHeadOffice.Phrase = new Phrase("Jl. Merapi Blok. E2 No. 23\nBanaran, Grogol, Sukoharjo, Jawa Tengah 57552\nTelp (0271) 732888, 7652913", normal_font);
             //cellHeadOffice.Phrase.Add(new Chunk("nara.exportgmt@danliris.com", underlined_font));
             tableHeadOffice.AddCell(cellHeadOffice);
             Chunk chunkAddress = new Chunk("MESSRS :\n" + viewModel.buyer.Name + "\n" + viewModel.buyer.Address, normal_font);
