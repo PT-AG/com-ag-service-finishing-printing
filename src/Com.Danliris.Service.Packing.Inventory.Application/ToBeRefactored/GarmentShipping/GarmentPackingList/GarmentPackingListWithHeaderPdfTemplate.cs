@@ -907,7 +907,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             image11.SetAbsolutePosition(marginLeft + 80, height - image11.ScaledHeight - marginTop + 75);
             cb.AddImage(image11, inlineImage: true);
 
-            cb.ShowTextAligned(PdfContentByte.ALIGN_LEFT, "Head Office : Jl. Merapi No. 23", marginLeft + 80, branchOfficeY, 0);
+            cb.ShowTextAligned(PdfContentByte.ALIGN_LEFT, "Head Office : Jl. Merapi Blok. E2 No. 23", marginLeft + 80, branchOfficeY, 0);
             string[] branchOffices1 = {
                 "Banaran, Grogol, Sukoharjo 57552",
                 "Central Java, Indonesia",

@@ -995,7 +995,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
             cb.AddImage(image, inlineImage: true);
 
             string[] headOffices = {
-                "Head Office : JL. MERAPI NO. 23, BANARAN, GROGOL, SUKOHARJO JAWA TENGAH 57552 - INDONESIA",
+                "Head Office : JL. MERAPI BLOK. E2 NO. 23, BANARAN, GROGOL, SUKOHARJO JAWA TENGAH 57552 - INDONESIA",
                 "TELP. 0271-732888",
                 "Website : www.ambassadorgarmindo.com",
             };

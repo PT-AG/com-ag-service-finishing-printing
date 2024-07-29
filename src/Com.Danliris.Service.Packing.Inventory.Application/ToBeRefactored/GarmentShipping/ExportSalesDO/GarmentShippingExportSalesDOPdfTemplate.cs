@@ -61,7 +61,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
             //cellHeaderContent1.AddElement(new Phrase("\n", normal_font));
             cellHeaderContent1.AddElement(new Phrase("PT. AMBASSADOR GARMINDO", header_font_bold_big));
-            cellHeaderContent1.AddElement(new Phrase("Head Office : Banaran, Grogol, Sukoharjo, 57552", small_font));
+            cellHeaderContent1.AddElement(new Phrase("Head Office : Jl. Merapi Blok. E2 No. 23", small_font));
+            cellHeaderContent1.AddElement(new Phrase("              Banaran, Grogol, Sukoharjo, 57552", small_font));
             //cellHeaderContent1.AddElement(new Phrase("", small_font));
             cellHeaderContent1.AddElement(new Phrase("Central Java, Indonesia", small_font));
             cellHeaderContent1.AddElement(new Phrase("Phone : (0271) 732888, 7652913", small_font));

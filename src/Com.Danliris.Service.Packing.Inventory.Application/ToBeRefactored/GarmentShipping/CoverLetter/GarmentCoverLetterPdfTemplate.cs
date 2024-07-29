@@ -430,8 +430,8 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
 
                 string[] headOffices = {
                 "PT. AMBASSADOR GARMINDO",
-                "Head Office : Banaran, Grogol, Sukoharjo, Jawa Tengah ",
-                "57552",
+                "Head Office : Jl. Merapi Blok E2 No. 23",
+                "Banaran,Grogol, Sukoharjo, Jawa Tengah 57552",
                 "TELP.: (0271) 732888, 7652913",
             };
                 for (int i = 0; i < headOffices.Length; i++)
