@@ -210,7 +210,7 @@ namespace Com.Danliris.Service.Packing.Inventory.Application.ToBeRefactored.Garm
                 Border = Rectangle.NO_BORDER,
                 PaddingLeft = 20f,
                 PaddingRight = 10f,
-                Phrase = new Phrase($"{viewModel.bank.bankName}\n{branch}\n{viewModel.bank.bankAddress}\nACC. No. {viewModel.bank.AccountNumber} ({viewModel.bank.Currency.Code})\nA/N. PT. DAN LIRIS\nSWIFT CODE : {viewModel.bank.swiftCode}\nPURPOSE CODE : 1011", normal_font)
+                Phrase = new Phrase($"{viewModel.bank.bankName}\n{branch}\n{viewModel.bank.bankAddress}\nACC. No. {viewModel.bank.AccountNumber} ({viewModel.bank.Currency.Code})\nA/N. PT. AMBASSADOR GARMINDO\nSWIFT CODE : {viewModel.bank.swiftCode}\nPURPOSE CODE : 1011", normal_font)
             });
 
             tableItems.AddCell(new PdfPCell
